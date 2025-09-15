@@ -741,15 +741,105 @@ The boilerplate code can be found [here](../03/../03_Day_Setting_Up/30-days-of-r
 ## Exercises: Level 1
 
 1. What is a module?
-2. What is package?
-3. What is the difference between a module and a package.
+   - Module là gì?
+   ```js
+   // A module is a reusable piece of code that encapsulates related functionality, typically in a single file, which can be imported/exported in other parts of a program.
+   // Module là một phần mã có thể tái sử dụng, đóng gói các chức năng liên quan, thường nằm trong một tệp duy nhất, có thể được nhập/xuất trong các phần khác của chương trình.
+   ```
+
+2. What is a package?
+   - Package là gì?
+   ```js
+   // A package is a collection of modules bundled together, often with additional metadata (e.g., package.json), distributed via a package manager like npm.
+   // Package là một tập hợp các module được đóng gói lại với nhau, thường kèm theo siêu dữ liệu (ví dụ: package.json), được phân phối thông qua trình quản lý gói như npm.
+   ```
+
+3. What is the difference between a module and a package?
+   - Sự khác biệt giữa module và package là gì?
+   ```js
+   // A module is a single file containing code for a specific functionality, while a package is a collection of modules, often with configuration files and dependencies, distributed as a unit.
+   // Module là một tệp duy nhất chứa mã cho một chức năng cụ thể, trong khi package là tập hợp các module, thường kèm theo tệp cấu hình và các phụ thuộc, được phân phối như một đơn vị.
+   ```
+
 4. What is NPM?
+   - NPM là gì?
+   ```js
+   // NPM (Node Package Manager) is a package manager for JavaScript that allows developers to install, share, and manage dependencies for Node.js and front-end projects.
+   // NPM (Node Package Manager) là một trình quản lý gói cho JavaScript, cho phép lập trình viên cài đặt, chia sẻ và quản lý các phụ thuộc cho các dự án Node.js và giao diện người dùng.
+   ```
+
 5. What is Webpack?
+   - Webpack là gì?
+   ```js
+   // Webpack is a module bundler that takes JavaScript files and their dependencies (e.g., CSS, images) and bundles them into a single file or smaller set of files for optimized web delivery.
+   // Webpack là một trình đóng gói module, lấy các tệp JavaScript và các phụ thuộc của chúng (ví dụ: CSS, hình ảnh) và đóng gói chúng thành một tệp duy nhất hoặc một tập hợp tệp nhỏ hơn để tối ưu hóa việc phân phối web.
+   ```
+
 6. How do you create a new React project?
-7. What are the files and folders inside a project folder(package.json, package-lock.json or yarn.lock, .gitignore,node_modules and public)?
+   - Làm thế nào để tạo một dự án React mới?
+   ```js
+   // To create a new React project, use the following command with npx to set up a project with Create React App:
+   // Để tạo một dự án React mới, sử dụng lệnh sau với npx để thiết lập một dự án với Create React App:
+   // npx create-react-app my-app
+   // cd my-app
+   // npm start
+   ```
+
+7. What are the files and folders inside a project folder (package.json, package-lock.json or yarn.lock, .gitignore, node_modules and public)?
+   - Các tệp và thư mục trong một thư mục dự án (package.json, package-lock.json hoặc yarn.lock, .gitignore, node_modules và public) là gì?
+   ```js
+   // - package.json: Contains project metadata and dependencies.
+   // - package-lock.json/yarn.lock: Locks dependency versions for consistent installs.
+   // - .gitignore: Specifies files/folders to ignore in Git version control.
+   // - node_modules: Stores installed dependencies.
+   // - public: Contains static assets like index.html and favicon.
+   // - package.json: Chứa siêu dữ liệu dự án và các phụ thuộc.
+   // - package-lock.json/yarn.lock: Khóa phiên bản phụ thuộc để cài đặt nhất quán.
+   // - .gitignore: Chỉ định các tệp/thư mục bỏ qua trong kiểm soát phiên bản Git.
+   // - node_modules: Lưu trữ các phụ thuộc đã cài đặt.
+   // - public: Chứa các tài sản tĩnh như index.html và favicon.
+   ```
+
 8. What is your favorite code editor (I believe that it is Visual Studio Code)?
-9. Add different Visual Studio Code extensions to improve your productivity(eg. prettier, ESLint etc).
+   - Trình soạn thảo mã yêu thích của bạn là gì (tôi tin rằng đó là Visual Studio Code)?
+   ```js
+   // My favorite code editor is Visual Studio Code due to its support for extensions, built-in terminal, debugging tools, and customization options.
+   // Trình soạn thảo mã yêu thích của tôi là Visual Studio Code vì nó hỗ trợ các tiện ích mở rộng, terminal tích hợp, công cụ gỡ lỗi và tùy chọn tùy chỉnh.
+   ```
+
+9. Add different Visual Studio Code extensions to improve your productivity (e.g., Prettier, ESLint, etc.).
+   - Thêm các tiện ích mở rộng Visual Studio Code khác nhau để cải thiện năng suất của bạn (ví dụ: Prettier, ESLint, v.v.).
+   ```js
+   // Recommended VS Code extensions:
+   // - Prettier: Formats code automatically for consistent styling.
+   // - ESLint: Identifies and fixes JavaScript code issues.
+   // - Live Server: Launches a local development server with live reload.
+   // - Bracket Pair Colorizer: Colors matching brackets for better code readability.
+   // - Auto Rename Tag: Automatically renames paired HTML/XML tags.
+   // Các tiện ích mở rộng VS Code được đề xuất:
+   // - Prettier: Tự động định dạng mã để đảm bảo phong cách nhất quán.
+   // - ESLint: Xác định và sửa lỗi mã JavaScript.
+   // - Live Server: Khởi chạy máy chủ phát triển cục bộ với tính năng tải lại trực tiếp.
+   // - Bracket Pair Colorizer: Tô màu các cặp ngoặc để dễ đọc mã hơn.
+   // - Auto Rename Tag: Tự động đổi tên các thẻ HTML/XML được ghép đôi.
+   ```
+
 10. Try to make a different custom module in a different file and import it to index.js.
+    - Hãy thử tạo một module tùy chỉnh khác trong một tệp khác và nhập nó vào index.js.
+    ```js
+    // File: customModule.js
+    export function greet(name) {
+      return `Hello, ${name}!`;
+    }
+    export function add(a, b) {
+      return a + b;
+    }
+
+    // File: index.js
+    import { greet, add } from './customModule.js';
+    console.log(greet("John")); // Hello, John!
+    console.log(add(5, 3)); // 8
+    ```
 
 ## Exercises: Level 2
 

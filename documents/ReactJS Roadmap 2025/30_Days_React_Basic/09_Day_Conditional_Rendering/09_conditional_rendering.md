@@ -762,20 +762,273 @@ Now it is time to express your thoughts about the Author and 30DaysOfReact. You 
 
 ## Exercises
 
-### Exercises: Level 1
 
-1. What is conditional rendering?
-2. How do you implement conditional rendering?
-3. Which method of conditional rendering do you prefer to use?
 
-### Exercises: Level 2
+### **Exercises: Level 1 – Conditional Rendering**
 
-1. Make a single page application which changes the body of the background based on the season of the year(Autumn, Winter, Spring, Summer)
-2. Make a single page application which change the body of the background based on the time of the day(Morning, Noon, Evening, Night)
+**1. What is conditional rendering?**
 
-### Exercises: Level 3
+Conditional rendering là kỹ thuật trong React cho phép **hiển thị UI khác nhau dựa trên điều kiện**.
 
-1. Fetching data takes some amount of time. A user has to wait until the data get loaded. Implement a loading functionality of a data is not fetched yet. You can simulate the delay using setTimeout.
+Ví dụ: nếu người dùng đã đăng nhập thì hiển thị nút “Logout”, nếu chưa thì hiển thị “Login”.
+
+---
+
+**2. How do you implement conditional rendering?**
+
+Có một số cách phổ biến trong React:
+
+* **Sử dụng `if` statements**
+
+```jsx
+render() {
+  const isLoggedIn = this.state.isLoggedIn;
+  if (isLoggedIn) {
+    return <h1>Welcome Back!</h1>;
+  } else {
+    return <h1>Please Login</h1>;
+  }
+}
+```
+
+* **Sử dụng ternary operator (`? :`)**
+
+```jsx
+render() {
+  const isLoggedIn = this.state.isLoggedIn;
+  return (
+    <div>
+      {isLoggedIn ? <h1>Welcome Back!</h1> : <h1>Please Login</h1>}
+    </div>
+  );
+}
+```
+
+* **Sử dụng logical AND (`&&`)**
+
+```jsx
+render() {
+  const showMessage = true;
+  return (
+    <div>
+      {showMessage && <p>This message shows only if showMessage is true.</p>}
+    </div>
+  );
+}
+```
+
+* **Sử dụng helper function**
+
+```jsx
+renderMessage() {
+  const { isLoggedIn } = this.state;
+  return isLoggedIn ? <h1>Welcome Back!</h1> : <h1>Please Login</h1>;
+}
+
+render() {
+  return <div>{this.renderMessage()}</div>;
+}
+```
+
+---
+
+**3. Which method of conditional rendering do you prefer to use?**
+
+* **Ternary (`? :`)**: ngắn gọn, phổ biến cho 2 lựa chọn.
+* **Logical AND (`&&`)**: tiện khi chỉ muốn render nếu điều kiện đúng.
+* **If statement**: tốt khi logic phức tạp.
+* **Helper function**: dễ maintain khi UI logic nhiều nhánh.
+
+💡 **Tip:** Tránh lồng nhiều ternary vì code sẽ khó đọc.
+
+### **Exercises: Level 2 – Dynamic Backgrounds**
+
+**1. Make a single page application which changes the body of the background based on the season of the year (Autumn, Winter, Spring, Summer)**
+
+**Answer (Class Component Example):**
+
+```jsx
+import React, { Component } from "react";
+
+class SeasonalBackground extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      season: this.getSeason(),
+    };
+  }
+
+  getSeason() {
+    const month = new Date().getMonth() + 1; // 1 - January, 12 - December
+    if (month >= 3 && month <= 5) return "Spring";
+    else if (month >= 6 && month <= 8) return "Summer";
+    else if (month >= 9 && month <= 11) return "Autumn";
+    else return "Winter";
+  }
+
+  render() {
+    const { season } = this.state;
+
+    const backgroundColors = {
+      Spring: "#a8e6cf",
+      Summer: "#ffd3b6",
+      Autumn: "#ffaaa5",
+      Winter: "#dcedc1",
+    };
+
+    const style = {
+      height: "100vh",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: backgroundColors[season],
+      fontSize: "2rem",
+      transition: "background-color 1s ease",
+    };
+
+    return (
+      <div style={style}>
+        Current Season: {season}
+      </div>
+    );
+  }
+}
+
+export default SeasonalBackground;
+```
+
+✅ **Explanation:**
+
+* `getSeason()` dựa vào tháng hiện tại để xác định mùa.
+* State `season` dùng để chọn màu nền.
+* Màu nền thay đổi **dynamically** theo mùa.
+
+---
+
+**2. Make a single page application which changes the body of the background based on the time of the day (Morning, Noon, Evening, Night)**
+
+**Answer (Class Component Example):**
+
+```jsx
+import React, { Component } from "react";
+
+class TimeOfDayBackground extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      timeOfDay: this.getTimeOfDay(),
+    };
+  }
+
+  getTimeOfDay() {
+    const hour = new Date().getHours(); // 0 - 23
+    if (hour >= 5 && hour < 12) return "Morning";
+    else if (hour >= 12 && hour < 17) return "Noon";
+    else if (hour >= 17 && hour < 20) return "Evening";
+    else return "Night";
+  }
+
+  render() {
+    const { timeOfDay } = this.state;
+
+    const backgroundColors = {
+      Morning: "#FFFACD", // LemonChiffon
+      Noon: "#87CEEB", // SkyBlue
+      Evening: "#FFA07A", // LightSalmon
+      Night: "#2F4F4F", // DarkSlateGray
+    };
+
+    const style = {
+      height: "100vh",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: backgroundColors[timeOfDay],
+      fontSize: "2rem",
+      color: timeOfDay === "Night" ? "#fff" : "#000",
+      transition: "background-color 1s ease",
+    };
+
+    return (
+      <div style={style}>
+        Current Time: {timeOfDay}
+      </div>
+    );
+  }
+}
+
+export default TimeOfDayBackground;
+```
+
+✅ **Explanation:**
+
+* `getTimeOfDay()` dựa vào giờ hiện tại để xác định thời gian trong ngày.
+* State `timeOfDay` dùng để chọn màu nền và màu chữ.
+* Nền thay đổi **dynamic** và có hiệu ứng chuyển màu mượt (`transition`).
+
+---
+
+💡 **Tip:** Bạn có thể kết hợp cả mùa và thời gian trong cùng một component để background thay đổi phức tạp hơn.
+
+### **Exercises: Level 3 – Loading State**
+
+**1. Fetching data takes some amount of time. A user has to wait until the data get loaded. Implement a loading functionality if the data is not fetched yet. You can simulate the delay using `setTimeout`.**
+
+**Answer (Class Component Example, logic only):**
+
+```jsx
+import React, { Component } from "react";
+
+class DataLoader extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: null,    // initial data is null
+      loading: true, // initial loading state
+    };
+  }
+
+  componentDidMount() {
+    // simulate fetching data with 2 seconds delay
+    setTimeout(() => {
+      const fetchedData = {
+        name: "ReactJS",
+        type: "JavaScript Library",
+        purpose: "Build UI",
+      };
+      this.setState({ data: fetchedData, loading: false });
+    }, 2000);
+  }
+
+  render() {
+    const { data, loading } = this.state;
+
+    if (loading) {
+      return <div>Loading data, please wait...</div>;
+    }
+
+    return (
+      <div>
+        <h2>Data Loaded:</h2>
+        <p>Name: {data.name}</p>
+        <p>Type: {data.type}</p>
+        <p>Purpose: {data.purpose}</p>
+      </div>
+    );
+  }
+}
+
+export default DataLoader;
+```
+
+✅ **Logic explanation:**
+
+1. `state.loading` dùng để kiểm tra xem dữ liệu đã được load chưa.
+2. `componentDidMount()` mô phỏng **fetching data** bằng `setTimeout`.
+3. Khi dữ liệu chưa có (`loading: true`) → render “Loading…”.
+4. Khi dữ liệu đã có (`loading: false`) → render dữ liệu thật.
+
+💡 **Tip:** Đây là pattern cơ bản để xử lý **loading state** trong React class component.
 
 🎉 CONGRATULATIONS ! 🎉
 

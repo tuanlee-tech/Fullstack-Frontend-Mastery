@@ -31,8 +31,8 @@
     - [render](#render-1)
     - [componentDidUpdate](#componentdidupdate)
   - [Unmounting](#unmounting)
-- [Exercises](#exercises)
-  - [Exercises: Level 1](#exercises-level-1)
+  - [**Exercises**](#exercises)
+      - [**Exercises: Level 1 – Component Life Cycle / Vòng đời của Component**](#exercises-level-1--component-life-cycle--vòng-đời-của-component)
   - [Exercises: Level 2](#exercises-level-2)
   - [Exercises: Level 3](#exercises-level-3)
 
@@ -591,20 +591,112 @@ ReactDOM.render(<App />, rootElement)
 The final phase in the lifecycle of a component is unmounting. The unmounting phase removes component from the DOM.
 The componentWillUnmount method is the only built-in method that gets called when a component is unmounted.
 
-# Exercises
+---
 
-## Exercises: Level 1
+## **Exercises**
 
-1. What is component life cycles
-2. What is the purpose of life cycles
-3. What are the three stages of a component life cycle
-4. What does mounting means?
-5. What does updating means
-6. What does unmounting means?
-7. What is the most common built-in mounting life cycle method?
-8. What are the mounting life cycle methods?
-9. What are the updating life cycle methods?
-10. What is the unmounting life cycle method?
+
+
+#### **Exercises: Level 1 – Component Life Cycle / Vòng đời của Component**
+
+**1. What is component life cycles? / Vòng đời của component là gì?**
+
+* **EN:** Component life cycle is a series of methods that are invoked at different stages of a React component’s existence.
+* **VI:** Vòng đời của component là tập hợp các phương thức được gọi ở các giai đoạn khác nhau trong vòng đời của một component React.
+
+---
+
+**2. What is the purpose of life cycles? / Mục đích của vòng đời là gì?**
+
+* **EN:** Life cycles allow developers to execute code at specific moments, like initialization, updating, or cleanup.
+* **VI:** Vòng đời cho phép lập trình viên chạy code vào những thời điểm cụ thể, như khởi tạo, cập nhật hoặc dọn dẹp.
+
+---
+
+**3. What are the three stages of a component life cycle? / Ba giai đoạn chính của vòng đời component là gì?**
+
+* **EN:** Mounting, Updating, Unmounting
+* **VI:** Gắn kết (Mounting), Cập nhật (Updating), Hủy gắn kết (Unmounting)
+
+---
+
+**4. What does mounting means? / Mounting có nghĩa là gì?**
+
+* **EN:** Mounting is the phase when a component is **created and inserted into the DOM**.
+* **VI:** Mounting là giai đoạn component **được tạo và chèn vào DOM**.
+
+---
+
+**5. What does updating means? / Updating có nghĩa là gì?**
+
+* **EN:** Updating is the phase when a component **re-renders due to changes in props or state**.
+* **VI:** Updating là giai đoạn component **render lại khi props hoặc state thay đổi**.
+
+---
+
+**6. What does unmounting means? / Unmounting có nghĩa là gì?**
+
+* **EN:** Unmounting is the phase when a component **is removed from the DOM**.
+* **VI:** Unmounting là giai đoạn component **bị xóa khỏi DOM**.
+
+---
+
+**7. What is the most common built-in mounting life cycle method? / Phương thức vòng đời Mounting phổ biến nhất là gì?**
+
+* **EN:** `componentDidMount()` – called after the component is rendered for the first time.
+* **VI:** `componentDidMount()` – được gọi sau khi component render lần đầu tiên.
+
+---
+
+**8. What are the mounting life cycle methods? / Các phương thức vòng đời Mounting là gì?**
+
+* **EN:**
+
+  1. `constructor()` – initialize state and bind methods
+  2. `static getDerivedStateFromProps()` – update state based on props before render
+  3. `render()` – returns JSX
+  4. `componentDidMount()` – called after first render
+* **VI:**
+
+  1. `constructor()` – khởi tạo state và bind method
+  2. `static getDerivedStateFromProps()` – cập nhật state dựa trên props trước khi render
+  3. `render()` – trả về JSX
+  4. `componentDidMount()` – được gọi sau lần render đầu tiên
+
+---
+
+**9. What are the updating life cycle methods? / Các phương thức vòng đời Updating là gì?**
+
+* **EN:**
+
+  1. `static getDerivedStateFromProps()` – update state based on props
+  2. `shouldComponentUpdate()` – decide whether to re-render
+  3. `render()` – re-render JSX
+  4. `getSnapshotBeforeUpdate()` – capture info before DOM updates
+  5. `componentDidUpdate()` – called after re-render
+* **VI:**
+
+  1. `static getDerivedStateFromProps()` – cập nhật state dựa trên props
+  2. `shouldComponentUpdate()` – quyết định có render lại không
+  3. `render()` – render lại JSX
+  4. `getSnapshotBeforeUpdate()` – lấy thông tin trước khi DOM cập nhật
+  5. `componentDidUpdate()` – được gọi sau khi render lại
+
+---
+
+**10. What is the unmounting life cycle method? / Phương thức vòng đời Unmounting là gì?**
+
+* **EN:** `componentWillUnmount()` – used to clean up (e.g., cancel timers, remove event listeners) before the component is removed from the DOM.
+* **VI:** `componentWillUnmount()` – dùng để dọn dẹp (ví dụ: hủy timer, remove event listener) trước khi component bị xóa khỏi DOM.
+
+---
+
+✅ **Logic Notes / Ghi chú logic:**
+
+* **Mounting:** tạo component → render → `componentDidMount`
+* **Updating:** state/props thay đổi → render → `componentDidUpdate`
+* **Unmounting:** component bị xóa → `componentWillUnmount`
+
 
 ## Exercises: Level 2
 

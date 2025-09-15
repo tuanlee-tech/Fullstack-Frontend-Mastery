@@ -139,6 +139,129 @@ ReactDOM.render(<App />, rootElement
 
 1. Develop the following [application](https://www.30daysofreact.com/day-27/hexadecimal-colors). The application generates 27 hexadecimal colors by default. If the generate button get clicked it will generate another new 27 hexadecimal colors.
 
+
+**Requirements / Yêu cầu:**
+
+1. Generate **27 random hexadecimal colors** initially.
+
+   * Khởi tạo 27 màu ngẫu nhiên (hex).
+
+2. Display each color as a **box with the color code**.
+
+   * Hiển thị mỗi màu dưới dạng box kèm mã màu.
+
+3. Clicking **“Generate” button** generates a new set of 27 colors.
+
+   * Khi bấm nút “Generate”, tạo 27 màu mới.
+
+4. Use `useRef` to **focus on the Generate button** when app loads.
+
+   * Dùng `useRef` để focus nút “Generate” khi render.
+
+5. Optional: copy hex code to clipboard when box is clicked.
+
+   * Tùy chọn: copy màu vào clipboard khi click box.
+
+---
+
+## 🇺🇸 / 🇻🇳 Solution – Hexadecimal Colors Generator
+
+### App.js
+
+```javascript
+import React, { useState, useRef, useEffect } from 'react';
+import ReactDOM from 'react-dom';
+
+// Function to generate a random hex color
+const getRandomHexColor = () => {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for(let i=0; i<6; i++){
+    color += letters[Math.floor(Math.random()*16)];
+  }
+  return color;
+}
+
+const App = () => {
+  const [colors, setColors] = useState([]);
+  const buttonRef = useRef(null);
+
+  // Generate 27 colors
+  const generateColors = () => {
+    const newColors = Array.from({ length: 27 }, () => getRandomHexColor());
+    setColors(newColors);
+  }
+
+  // Focus on button when component mounts
+  useEffect(() => {
+    if(buttonRef.current){
+      buttonRef.current.focus();
+    }
+    generateColors(); // generate initial colors
+  }, []);
+
+  // Optional: copy to clipboard
+  const copyToClipboard = (hex) => {
+    navigator.clipboard.writeText(hex);
+    alert(`${hex} copied to clipboard!`);
+  }
+
+  return (
+    <div style={{ padding: '16px', fontFamily: 'sans-serif' }}>
+      <h1>Hexadecimal Colors Generator / Tạo màu Hex</h1>
+      <button 
+        ref={buttonRef}
+        onClick={generateColors}
+        style={{ padding: '8px 16px', marginBottom: '16px', cursor: 'pointer' }}
+      >
+        Generate / Tạo mới
+      </button>
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
+        gap: '12px'
+      }}>
+        {colors.map((hex, idx) => (
+          <div
+            key={idx}
+            onClick={() => copyToClipboard(hex)}
+            style={{
+              backgroundColor: hex,
+              height: '100px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              color: '#fff',
+              fontWeight: 'bold',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+              textShadow: '1px 1px 2px rgba(0,0,0,0.6)'
+            }}
+          >
+            {hex}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+const rootElement = document.getElementById('root');
+ReactDOM.render(<App />, rootElement);
+```
+
+---
+
+### ✅ Key Points / Lưu ý
+
+1. **useRef**: Focus nút khi render lần đầu (`buttonRef.current.focus()`).
+2. **useState**: Quản lý state mảng 27 màu.
+3. **useEffect**: Thực hiện generate màu và focus nút khi component mount.
+4. **Grid responsive**: Mỗi box màu tự co theo màn hình.
+5. **Copy to clipboard**: Dùng `navigator.clipboard.writeText(hex)`.
+6. **Reusable color generator**: Hàm `getRandomHexColor()` tái sử dụng.
 🎉 CONGRATULATIONS ! 🎉
 
 [<< Day 25](../25_Custom_Hooks/25_custom_hooks.md) | [Day 27>>]()

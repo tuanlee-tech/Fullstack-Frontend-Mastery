@@ -27,8 +27,10 @@
   - [What is the purpose of validation](#what-is-the-purpose-of-validation)
   - [Validation Types](#validation-types)
 - [Exercises](#exercises)
-  - [Exercises: Level 1](#exercises-level-1)
+  - [**Exercises: Level 1 – Forms in React (Class Components)**](#exercises-level-1--forms-in-react-class-components)
   - [Exercises: Level 2](#exercises-level-2)
+    - [**1️⃣ Validation Without Library**](#1️⃣-validation-without-library)
+    - [**2️⃣ Validation With `validator.js`**](#2️⃣-validation-with-validatorjs)
   - [Exercises: Level 3](#exercises-level-3)
 
 # Forms
@@ -918,28 +920,338 @@ ReactDOM.render(<App />, rootElement)
 
 # Exercises
 
-## Exercises: Level 1
+## **Exercises: Level 1 – Forms in React (Class Components)**
 
-1. What is the importance of form?
-2. How many input types do you know?
-3. Mention at least four attributes of an input element
-4. What is the importance of htmlFor?
-5. Write an input type which is not given in the example if there is?
-6. What is a controlled input?
-7. What do you need to write a controlled input?
-8. What event type do you use to listen changes on an input field?
-9. What is the value of a checked checkbox?
-10. When do you use onChange, onBlur, onSubmit?
-11. What is the purpose of writing e.preventDefault() inside the submit handler method?
-12. How do you bind data in React? The first input field example is data binding in React.
-13. What is validation?
-14. What is the event type you use to listen when an input changes?
-15. What are event types do you use to validate an input?
+**1. What is the importance of form?**
+
+* Forms allow **users to input and submit data** in web applications.
+* Essential for login, signup, search, feedback, and data entry functionalities.
+
+---
+
+**2. How many input types do you know?**
+Some common HTML input types:
+
+* `text`, `password`, `email`, `number`, `checkbox`, `radio`, `date`, `file`, `color`, `range`, `url`, `tel`, `submit`, `reset`, `button`
+
+---
+
+**3. Mention at least four attributes of an input element**
+
+* `type` – defines input type (text, password, etc.)
+* `value` – current value of input
+* `name` – name of input (useful in forms)
+* `placeholder` – hint text inside input
+* `checked` – for checkbox/radio
+* `required` – require user input
+
+---
+
+**4. What is the importance of `htmlFor`?**
+
+* In React, `htmlFor` links a `<label>` to an `<input>` by `id`.
+* Clicking the label **focuses the input**, improving accessibility.
+
+```jsx
+<label htmlFor="username">Username</label>
+<input id="username" type="text" />
+```
+
+---
+
+**5. Write an input type which is not given in the example if there is**
+
+* Example: `color`, `range`, `month`, `week`, `time`
+
+---
+
+**6. What is a controlled input?**
+
+* A **controlled input** is an input element **whose value is controlled by React state**.
+* React is the **single source of truth** for input value.
+
+---
+
+**7. What do you need to write a controlled input?**
+
+* **State** to store input value
+* **`value` prop** on the input linked to state
+* **Event handler** (e.g., `onChange`) to update state
+
+```jsx
+<input type="text" value={this.state.name} onChange={this.handleChange} />
+```
+
+---
+
+**8. What event type do you use to listen changes on an input field?**
+
+* `onChange`
+
+---
+
+**9. What is the value of a checked checkbox?**
+
+* `true` if checked, `false` if not.
+
+```jsx
+<input type="checkbox" checked={this.state.checked} onChange={this.handleCheck} />
+```
+
+---
+
+**10. When do you use `onChange`, `onBlur`, `onSubmit`?**
+
+* `onChange`: listen **value changes** in input
+* `onBlur`: detect **when input loses focus**
+* `onSubmit`: detect **when form is submitted**
+
+---
+
+**11. What is the purpose of writing `e.preventDefault()` inside the submit handler method?**
+
+* Prevents **default browser behavior** of refreshing page on form submit.
+* Allows **custom handling** of form submission in React.
+
+---
+
+**12. How do you bind data in React?**
+
+* Use **state** and `onChange` to **bind input value to state**.
+
+```jsx
+this.state = { name: "" };
+
+handleChange = (e) => {
+  this.setState({ name: e.target.value });
+};
+
+<input type="text" value={this.state.name} onChange={this.handleChange} />
+```
+
+---
+
+**13. What is validation?**
+
+* Process to **check if input data is correct or complete** before submission.
+* Can be **HTML validation** (`required`, `pattern`) or **custom React validation**.
+
+---
+
+**14. What is the event type you use to listen when an input changes?**
+
+* `onChange`
+
+---
+
+**15. What are event types do you use to validate an input?**
+
+* `onChange` – validate as user types
+* `onBlur` – validate when user leaves input
+* `onSubmit` – validate before submitting the form
+
+---
+
+✅ **Logic Notes (Class Component Context):**
+
+* All input handling should use **state**.
+* Event handlers in class components should be **arrow functions** or bound in the constructor.
+* Controlled inputs make validation and data handling easier.
 
 ## Exercises: Level 2
 
 1. Validate the form given above (a gif image or a video will be provided later). First try to validate without using any library then try it with [validator.js](https://www.npmjs.com/package/validator).
+### **1️⃣ Validation Without Library**
 
+```jsx
+import React, { Component } from "react";
+
+export default class FormValidation extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: "",
+      email: "",
+      password: "",
+      errors: {},
+    };
+  }
+
+  handleChange = (e) => {
+    this.setState({ [e.target.name]: e.target.value });
+  };
+
+  validate = () => {
+    const { name, email, password } = this.state;
+    const errors = {};
+
+    if (!name.trim()) errors.name = "Name is required";
+    if (!email.trim()) errors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(email)) errors.email = "Email is invalid";
+
+    if (!password) errors.password = "Password is required";
+    else if (password.length < 6) errors.password = "Password must be at least 6 characters";
+
+    return errors;
+  };
+
+  handleSubmit = (e) => {
+    e.preventDefault();
+    const errors = this.validate();
+    if (Object.keys(errors).length > 0) {
+      this.setState({ errors });
+    } else {
+      this.setState({ errors: {} });
+      console.log("Form Submitted:", this.state);
+    }
+  };
+
+  render() {
+    const { name, email, password, errors } = this.state;
+
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <input
+          type="text"
+          name="name"
+          value={name}
+          placeholder="Name"
+          onChange={this.handleChange}
+        />
+        {errors.name && <p>{errors.name}</p>}
+
+        <input
+          type="email"
+          name="email"
+          value={email}
+          placeholder="Email"
+          onChange={this.handleChange}
+        />
+        {errors.email && <p>{errors.email}</p>}
+
+        <input
+          type="password"
+          name="password"
+          value={password}
+          placeholder="Password"
+          onChange={this.handleChange}
+        />
+        {errors.password && <p>{errors.password}</p>}
+
+        <button type="submit">Submit</button>
+      </form>
+    );
+  }
+}
+```
+
+✅ **Logic explanation:**
+
+1. `state` lưu giá trị input và lỗi.
+2. `handleChange` cập nhật **controlled input**.
+3. `validate()` kiểm tra các rule cơ bản: required, email format, password length.
+4. `handleSubmit` **preventDefault**, gọi validate, cập nhật errors hoặc submit.
+
+---
+
+### **2️⃣ Validation With `validator.js`**
+
+**Install:**
+
+```bash
+npm install validator
+```
+
+```jsx
+import React, { Component } from "react";
+import validator from "validator";
+
+export default class FormValidationWithLib extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: "",
+      email: "",
+      password: "",
+      errors: {},
+    };
+  }
+
+  handleChange = (e) => {
+    this.setState({ [e.target.name]: e.target.value });
+  };
+
+  validate = () => {
+    const { name, email, password } = this.state;
+    const errors = {};
+
+    if (validator.isEmpty(name)) errors.name = "Name is required";
+    if (!validator.isEmail(email)) errors.email = "Email is invalid";
+    if (!validator.isLength(password, { min: 6 })) errors.password = "Password must be at least 6 characters";
+
+    return errors;
+  };
+
+  handleSubmit = (e) => {
+    e.preventDefault();
+    const errors = this.validate();
+    if (Object.keys(errors).length > 0) {
+      this.setState({ errors });
+    } else {
+      this.setState({ errors: {} });
+      console.log("Form Submitted:", this.state);
+    }
+  };
+
+  render() {
+    const { name, email, password, errors } = this.state;
+
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <input
+          type="text"
+          name="name"
+          value={name}
+          placeholder="Name"
+          onChange={this.handleChange}
+        />
+        {errors.name && <p>{errors.name}</p>}
+
+        <input
+          type="email"
+          name="email"
+          value={email}
+          placeholder="Email"
+          onChange={this.handleChange}
+        />
+        {errors.email && <p>{errors.email}</p>}
+
+        <input
+          type="password"
+          name="password"
+          value={password}
+          placeholder="Password"
+          onChange={this.handleChange}
+        />
+        {errors.password && <p>{errors.password}</p>}
+
+        <button type="submit">Submit</button>
+      </form>
+    );
+  }
+}
+```
+
+✅ **Logic explanation with `validator.js`:**
+
+* `validator.isEmpty()` → kiểm tra trống
+* `validator.isEmail()` → kiểm tra email hợp lệ
+* `validator.isLength()` → kiểm tra độ dài password
+* Tất cả các lỗi được **đẩy vào state.errors** để hiển thị.
+
+---
+
+💡 **Tip:** Đây là pattern cơ bản **form validation trong class component**, dễ mở rộng với nhiều input hơn.
 ## Exercises: Level 3
 
 Coming ..

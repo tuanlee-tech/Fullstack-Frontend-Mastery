@@ -1549,55 +1549,288 @@ As you can see above, now the lists are formatted properly, but there is a warni
 Now, you have a very good understanding of how to create JSX elements and also how to inject data to JSX. In the next section, we will talk about how to use create-react-app and components. Components are more powerful and useful than JSX.
 
 🌕 You are awesome. You have just completed day 2 challenges and you are two steps ahead on your way to greatness. Now do some exercises for your brain and for your muscle.
-
 ### Exercises
 
 #### Exercises: What is React?
 
 1. What is React?
+   - React là gì?
+   ```js
+   // React is a JavaScript library for building user interfaces, particularly for single-page applications. It allows developers to create reusable UI components.
+   // React là một thư viện JavaScript dùng để xây dựng giao diện người dùng, đặc biệt là cho các ứng dụng một trang. Nó cho phép lập trình viên tạo các thành phần giao diện có thể tái sử dụng.
+   ```
+
 2. What is a library?
+   - Thư viện là gì?
+   ```js
+   // A library is a collection of pre-written code that developers can use to perform common tasks, making development faster and easier. Unlike a framework, it does not dictate the application structure.
+   // Thư viện là tập hợp các mã được viết sẵn mà lập trình viên có thể sử dụng để thực hiện các tác vụ phổ biến, giúp phát triển nhanh và dễ dàng hơn. Khác với framework, nó không quy định cấu trúc ứng dụng.
+   ```
+
 3. What is a single page application?
-4. What is a component ?
+   - Ứng dụng một trang là gì?
+   ```js
+   // A single-page application (SPA) is a web application that loads a single HTML page and dynamically updates the content as the user interacts with it, without requiring full page reloads.
+   // Ứng dụng một trang (SPA) là một ứng dụng web tải một trang HTML duy nhất và cập nhật nội dung động khi người dùng tương tác, mà không cần tải lại toàn bộ trang.
+   ```
+
+4. What is a component?
+   - Thành phần (component) là gì?
+   ```js
+   // A component in React is a reusable, independent piece of UI, like a button or a card, that can have its own logic and styling.
+   // Thành phần trong React là một phần giao diện độc lập, có thể tái sử dụng, như nút hoặc thẻ, có thể có logic và kiểu dáng riêng.
+   ```
+
 5. What is the latest version of React?
+   - Phiên bản mới nhất của React là gì?
+   ```js
+   // As of September 12, 2025, the latest version of React is 18.x (released in March 2022). Check the official React website or npm for the exact minor version.
+   // Tính đến ngày 12 tháng 9 năm 2025, phiên bản mới nhất của React là 18.x (phát hành vào tháng 3 năm 2022). Kiểm tra trang web chính thức của React hoặc npm để biết phiên bản nhỏ chính xác.
+   ```
+
 6. What is DOM?
+   - DOM là gì?
+   ```js
+   // The Document Object Model (DOM) is a programming interface for web documents. It represents the page structure as a tree of objects, allowing scripts to manipulate content and structure.
+   // Document Object Model (DOM) là một giao diện lập trình cho các tài liệu web. Nó biểu diễn cấu trúc trang dưới dạng cây đối tượng, cho phép các tập lệnh thao tác với nội dung và cấu trúc.
+   ```
+
 7. What is React Virtual DOM?
-8. What does a web application or a website(composed of) have?
+   - React Virtual DOM là gì?
+   ```js
+   // React Virtual DOM is an in-memory representation of the real DOM. React uses it to optimize updates by comparing changes and updating only the necessary parts of the real DOM.
+   // React Virtual DOM là một biểu diễn trong bộ nhớ của DOM thực. React sử dụng nó để tối ưu hóa việc cập nhật bằng cách so sánh các thay đổi và chỉ cập nhật các phần cần thiết của DOM thực.
+   ```
+
+8. What does a web application or a website (composed of) have?
+   - Một ứng dụng web hoặc trang web bao gồm những gì?
+   ```js
+   // A web application or website typically consists of HTML (structure), CSS (styling), JavaScript (interactivity), and optionally a backend (server, database) and APIs for dynamic data.
+   // Một ứng dụng web hoặc trang web thường bao gồm HTML (cấu trúc), CSS (kiểu dáng), JavaScript (tương tác), và tùy chọn có backend (máy chủ, cơ sở dữ liệu) và API cho dữ liệu động.
+   ```
 
 #### Exercises: Why React?
 
-1. Why did you chose to use react?
-2. What measures do you use to know popularity ?
-3. What is more popular, React or Vue ?
+1. Why did you choose to use React?
+   - Tại sao bạn chọn sử dụng React?
+   ```js
+   // React is chosen for its component-based architecture, fast performance via Virtual DOM, strong community support, and flexibility in building scalable, interactive UIs.
+   // React được chọn vì kiến trúc dựa trên thành phần, hiệu suất nhanh nhờ Virtual DOM, hỗ trợ cộng đồng mạnh mẽ và tính linh hoạt trong việc xây dựng giao diện tương tác, có thể mở rộng.
+   ```
+
+2. What measures do you use to know popularity?
+   - Bạn sử dụng các thước đo nào để biết mức độ phổ biến?
+   ```js
+   // Popularity can be measured by GitHub stars, npm downloads, Stack Overflow activity, job postings, community engagement, and usage in major companies or projects.
+   // Mức độ phổ biến có thể được đo bằng số sao trên GitHub, lượt tải trên npm, hoạt động trên Stack Overflow, tin tuyển dụng, sự tham gia của cộng đồng và việc sử dụng trong các công ty hoặc dự án lớn.
+   ```
+
+3. What is more popular, React or Vue?
+   - Cái nào phổ biến hơn, React hay Vue?
+   ```js
+   // As of 2025, React is generally more popular than Vue, based on higher npm downloads, GitHub stars (React: ~230k, Vue: ~200k), and wider adoption in large-scale applications. However, Vue is popular for its simplicity.
+   // Tính đến năm 2025, React thường phổ biến hơn Vue, dựa trên lượt tải npm cao hơn, số sao trên GitHub (React: ~230k, Vue: ~200k) và mức độ áp dụng rộng rãi trong các ứng dụng quy mô lớn. Tuy nhiên, Vue được ưa chuộng vì sự đơn giản.
+   ```
 
 #### Exercises: JSX
 
 1. What is an HTML element?
-2. How to write a self closing HTML element?
+   - Phần tử HTML là gì?
+   ```js
+   // An HTML element is a building block of a webpage, defined by tags (e.g., <div>, <p>), which may contain attributes, content, or other nested elements.
+   // Phần tử HTML là một khối xây dựng của trang web, được định nghĩa bởi các thẻ (ví dụ: <div>, <p>), có thể chứa thuộc tính, nội dung hoặc các phần tử lồng nhau khác.
+   ```
+
+2. How to write a self-closing HTML element?
+   - Làm thế nào để viết một phần tử HTML tự đóng?
+   ```js
+   // A self-closing HTML element has no content and ends with a slash, e.g., <img src="image.jpg" /> or <input type="text" />.
+   // Phần tử HTML tự đóng không có nội dung và kết thúc bằng dấu gạch chéo, ví dụ: <img src="image.jpg" /> hoặc <input type="text" />.
+   ```
+
 3. What is an HTML attribute? Write some of them
+   - Thuộc tính HTML là gì? Viết một số thuộc tính
+   ```js
+   // An HTML attribute provides additional information about an element, written as name-value pairs in the opening tag. Examples: id, class, src, href, alt, type, value.
+   // Thuộc tính HTML cung cấp thông tin bổ sung về một phần tử, được viết dưới dạng cặp tên-giá trị trong thẻ mở. Ví dụ: id, class, src, href, alt, type, value.
+   ```
+
 4. What is JSX?
-5. What is babel?
+   - JSX là gì?
+   ```js
+   // JSX (JavaScript XML) is a syntax extension for JavaScript used with React to describe UI elements. It looks like HTML but is compiled to JavaScript.
+   // JSX (JavaScript XML) là một phần mở rộng cú pháp cho JavaScript, được sử dụng với React để mô tả các phần tử giao diện. Nó trông giống HTML nhưng được biên dịch thành JavaScript.
+   ```
+
+5. What is Babel?
+   - Babel là gì?
+   ```js
+   // Babel is a JavaScript compiler that converts modern JavaScript (and JSX) into backward-compatible code that can run in older browsers.
+   // Babel là một trình biên dịch JavaScript chuyển đổi JavaScript hiện đại (và JSX) thành mã tương thích ngược có thể chạy trên các trình duyệt cũ.
+   ```
+
 6. What is a transpiler?
+   - Transpiler là gì?
+   ```js
+   // A transpiler is a tool that converts source code from one programming language (or version) to another, such as converting ES6+ JavaScript to ES5 or JSX to JavaScript.
+   // Transpiler là một công cụ chuyển đổi mã nguồn từ một ngôn ngữ lập trình (hoặc phiên bản) sang ngôn ngữ khác, chẳng hạn như chuyển đổi JavaScript ES6+ thành ES5 hoặc JSX thành JavaScript.
+   ```
 
 #### Exercises: JSX Elements
 
 1. What is a JSX element?
+   - Phần tử JSX là gì?
+   ```js
+   // A JSX element is a combination of JavaScript and HTML-like syntax used in React to define UI components. It is transpiled into JavaScript function calls.
+   // Phần tử JSX là sự kết hợp giữa JavaScript và cú pháp giống HTML được sử dụng trong React để định nghĩa các thành phần giao diện. Nó được chuyển đổi thành các lệnh gọi hàm JavaScript.
+   ```
+
 2. Write your name in a JSX element and store it in a name variable
+   - Viết tên của bạn trong một phần tử JSX và lưu vào biến name
+   ```js
+   const name = <h1>John Doe</h1>;
+   ```
+
 3. Write a JSX element which displays your full name, country, title, gender, email, phone number. Use h1 for the name and p for the rest of the information and store it in a user variable
+   - Viết một phần tử JSX hiển thị tên đầy đủ, quốc gia, chức danh, giới tính, email, số điện thoại của bạn. Sử dụng h1 cho tên và p cho các thông tin còn lại, lưu vào biến user
+   ```js
+   const user = (
+     <div>
+       <h1>John Doe</h1>
+       <p>Country: Vietnam</p>
+       <p>Title: Software Engineer</p>
+       <p>Gender: Male</p>
+       <p>Email: john.doe@example.com</p>
+       <p>Phone: +84 123 456 789</p>
+     </div>
+   );
+   ```
+
 4. Write a footer JSX element
+   - Viết một phần tử JSX cho footer
+   ```js
+   const footer = (
+     <footer>
+       <p>&copy; 2025 My Website. All rights reserved.</p>
+     </footer>
+   );
+   ```
 
 #### Exercises: Inline Style
 
 1. Create a style object for the main JSX
+   - Tạo một đối tượng style cho JSX chính
+   ```js
+   const mainStyle = {
+     backgroundColor: '#f0f0f0',
+     padding: '20px',
+     textAlign: 'center'
+   };
+   const main = <main style={mainStyle}>Welcome to my website!</main>;
+   ```
+
 2. Create a style object for the footer and app JSX
+   - Tạo một đối tượng style cho footer và app JSX
+   ```js
+   const footerStyle = {
+     backgroundColor: '#333',
+     color: '#fff',
+     padding: '10px',
+     textAlign: 'center'
+   };
+   const appStyle = {
+     fontFamily: 'Arial, sans-serif',
+     minHeight: '100vh',
+     display: 'flex',
+     flexDirection: 'column'
+   };
+   const footer = <footer style={footerStyle}>&copy; 2025 My Website</footer>;
+   const app = <div style={appStyle}>{main}{footer}</div>;
+   ```
+
 3. Add more styles to the JSX elements
+   - Thêm các kiểu dáng khác cho các phần tử JSX
+   ```js
+   const mainStyle = {
+     backgroundColor: '#f0f0f0',
+     padding: '20px',
+     textAlign: 'center',
+     borderRadius: '10px',
+     boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+   };
+   const footerStyle = {
+     backgroundColor: '#333',
+     color: '#fff',
+     padding: '10px',
+     textAlign: 'center',
+     fontSize: '14px',
+     marginTop: 'auto'
+   };
+   const main = <main style={mainStyle}>Welcome to my website!</main>;
+   const footer = <footer style={footerStyle}>&copy; 2025 My Website</footer>;
+   ```
 
 #### Exercises: Internal Styles
 
 1. Apply different styles to your JSX elements
+   - Áp dụng các kiểu dáng khác nhau cho các phần tử JSX
+   ```js
+   const styles = {
+     header: {
+       backgroundColor: '#007BFF',
+       color: 'white',
+       padding: '15px',
+       textAlign: 'center'
+     },
+     main: {
+       backgroundColor: '#f8f9fa',
+       padding: '20px',
+       margin: '10px',
+       borderRadius: '8px'
+     },
+     footer: {
+       backgroundColor: '#343a40',
+       color: 'white',
+       padding: '10px',
+       textAlign: 'center',
+       fontSize: '14px'
+     }
+   };
+   const app = (
+     <div>
+       <header style={styles.header}>My Website Header</header>
+       <main style={styles.main}>Welcome to my website!</main>
+       <footer style={styles.footer}>&copy; 2025 My Website</footer>
+     </div>
+   );
+   ```
 
 #### Exercise: Inject data to JSX
 
-1. Practice how to make JSX element and injecting dynamic data(string, number, boolean, array, object)
+1. Practice how to make JSX element and injecting dynamic data (string, number, boolean, array, object)
+   - Thực hành tạo phần tử JSX và chèn dữ liệu động (chuỗi, số, boolean, mảng, đối tượng)
+   ```js
+   const fullName = "John Doe";
+   const age = 30;
+   const isDeveloper = true;
+   const skills = ['React', 'JavaScript', 'CSS'];
+   const userInfo = {
+     country: 'Vietnam',
+     title: 'Software Engineer',
+     email: 'john.doe@example.com'
+   };
+   const element = (
+     <div>
+       <h1>{fullName}</h1>
+       <p>Age: {age}</p>
+       <p>Is Developer: {isDeveloper ? 'Yes' : 'No'}</p>
+       <p>Skills: {skills.join(', ')}</p>
+       <p>Country: {userInfo.country}</p>
+       <p>Title: {userInfo.title}</p>
+       <p>Email: {userInfo.email}</p>
+     </div>
+   );
+   ```
 
 🎉 CONGRATULATIONS ! 🎉
 

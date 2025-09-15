@@ -262,10 +262,25 @@ ReactDOM.render(<App />, rootElement)
 
 ## Exercises: Level 1
 
-1. Why you need to map an array ?
-2. Why we need keys during mapping an array ?
-3. What is the importance of destructuring your code ?
-4. Does destructuring make your code clean and easy to read ?
+1. Why you need to map an array ?  
+   Tại sao cần sử dụng `map` trên một mảng?  
+   ✅ We use `map` to iterate over an array and transform each element into a new format, often to render a list of React elements.  
+   ✅ Chúng ta dùng `map` để lặp qua mảng và biến đổi mỗi phần tử thành định dạng mới, thường để render một danh sách các React element.  
+
+2. Why we need keys during mapping an array ?  
+   Tại sao cần dùng `key` khi map một mảng?  
+   ✅ Keys help React identify which items have changed, been added, or removed, improving performance and avoiding unnecessary re-renders.  
+   ✅ Key giúp React nhận biết phần tử nào đã thay đổi, thêm hoặc xóa, cải thiện hiệu suất và tránh render lại không cần thiết.  
+
+3. What is the importance of destructuring your code ?  
+   Tầm quan trọng của việc destructuring trong code là gì?  
+   ✅ Destructuring makes it easier to extract values from objects or arrays, reducing repetitive code and making code cleaner.  
+   ✅ Destructuring giúp lấy giá trị từ object hoặc array dễ dàng hơn, giảm lặp lại code và làm code gọn gàng hơn.  
+
+4. Does destructuring make your code clean and easy to read ?  
+   Destructuring có giúp code gọn gàng và dễ đọc không?  
+   ✅ Yes, destructuring improves code readability by clearly showing which values are being used without repeatedly accessing object properties.  
+   ✅ Có, destructuring cải thiện khả năng đọc code bằng cách hiển thị rõ ràng những giá trị nào đang được sử dụng mà không cần truy cập nhiều lần vào các property của object.  
 
 ## Exercises: Level 2
 

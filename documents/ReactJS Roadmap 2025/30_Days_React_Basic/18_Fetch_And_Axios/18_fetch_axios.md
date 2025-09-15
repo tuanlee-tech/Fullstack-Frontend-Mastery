@@ -24,6 +24,7 @@
 - [Exercises](#exercises)
   - [Exercises: Level 1](#exercises-level-1)
   - [Exercises: Level 2](#exercises-level-2)
+    - [React Class Component với Axios](#react-class-component-với-axios)
   - [Exercises: Level 3](#exercises-level-3)
 
 # Fetch and Axios
@@ -422,19 +423,212 @@ As you have seen, there is no much difference between fetch and axios. But I rec
 
 ## Exercises: Level 1
 
-1. What is HTTP request?
-2. What are the most common HTTP requests?
-3. What is fetch?
-4. What is axios?
-5. What is the difference between fetch and axios?
-6. Do you prefer fetch to axios for make HTTP requests?
+1. **What is HTTP request? / HTTP request là gì?**
+   🇺🇸 An HTTP request is a message sent by a client (like a browser or app) to a server asking for data or to perform an action. It usually includes URL, Method, Headers, and Body.
+   🇻🇳 HTTP request là một thông điệp được gửi từ client (như trình duyệt hoặc ứng dụng) đến server để yêu cầu dữ liệu hoặc thực hiện một hành động. Nó thường bao gồm URL, Method, Headers, và Body.
+
+---
+
+2. **What are the most common HTTP requests? / Các loại HTTP request phổ biến nhất là gì?**
+   🇺🇸 The most common HTTP methods are:
+
+* **GET** – retrieve data
+* **POST** – send new data
+* **PUT** – update existing data completely
+* **PATCH** – update existing data partially
+* **DELETE** – remove data
+
+🇻🇳 Các phương thức HTTP phổ biến nhất gồm:
+
+* **GET** – lấy dữ liệu
+* **POST** – gửi dữ liệu mới
+* **PUT** – cập nhật toàn bộ dữ liệu
+* **PATCH** – cập nhật một phần dữ liệu
+* **DELETE** – xóa dữ liệu
+
+---
+
+3. **What is fetch? / Fetch là gì?**
+   🇺🇸 `fetch` is a built-in JavaScript function to make HTTP requests. It returns a Promise that resolves to the server response.
+
+🇻🇳 `fetch` là một hàm có sẵn trong JavaScript dùng để thực hiện HTTP request. Nó trả về một Promise chứa kết quả phản hồi từ server.
+
+Example / Ví dụ:
+
+```javascript
+fetch('https://api.example.com/data')
+  .then(response => response.json())
+  .then(data => console.log(data));
+```
+
+---
+
+4. **What is axios? / Axios là gì?**
+   🇺🇸 `axios` is a popular JavaScript library for making HTTP requests. It works in browsers and Node.js and supports Promises.
+
+🇻🇳 `axios` là một thư viện JavaScript phổ biến dùng để thực hiện HTTP request. Nó hoạt động cả trên trình duyệt và Node.js, hỗ trợ Promises.
+
+Example / Ví dụ:
+
+```javascript
+axios.get('https://api.example.com/data')
+  .then(response => console.log(response.data));
+```
+
+---
+
+5. **What is the difference between fetch and axios? / Sự khác nhau giữa fetch và axios là gì?**
+
+| Feature / Tính năng                                                                     | fetch                                                   | axios |
+| --------------------------------------------------------------------------------------- | ------------------------------------------------------- | ----- |
+| Syntax / Cú pháp                                                                        | 🇺🇸 Built-in, simpler but requires extra JSON handling |       |
+| 🇻🇳 Có sẵn, đơn giản nhưng cần thêm code xử lý JSON                                    | 🇺🇸 Library, easier JSON handling                      |       |
+| 🇻🇳 Thư viện, xử lý JSON dễ dàng hơn                                                   |                                                         |       |
+| Browser support / Hỗ trợ trình duyệt                                                    | 🇺🇸 Modern browsers only                               |       |
+| 🇻🇳 Chỉ trình duyệt hiện đại                                                           | 🇺🇸 All modern browsers + IE                           |       |
+| 🇻🇳 Hỗ trợ cả IE và trình duyệt hiện đại                                               |                                                         |       |
+| Interceptors / Can intercept requests & responses / Có thể can thiệp request & response | 🇺🇸 No                                                 |       |
+| 🇻🇳 Không                                                                              | 🇺🇸 Yes                                                |       |
+| 🇻🇳 Có                                                                                 |                                                         |       |
+| Cancel request / Hủy request                                                            | 🇺🇸 Hard                                               |       |
+| 🇻🇳 Khó                                                                                | 🇺🇸 Easy                                               |       |
+| 🇻🇳 Dễ dàng                                                                            |                                                         |       |
+
+---
+
+6. **Do you prefer fetch to axios for making HTTP requests? / Bạn thích dùng fetch hay axios để thực hiện HTTP request?**
+   🇺🇸 It depends on the project.
+
+* Use **fetch** for simple requests
+* Use **axios** for advanced requests, JSON handling, interceptors, or canceling requests
+  Personally, I prefer **axios** because it’s easier to handle JSON and errors.
+
+🇻🇳 Tùy vào dự án.
+
+* Dùng **fetch** cho các request đơn giản
+* Dùng **axios** cho request phức tạp, xử lý JSON, interceptors hoặc hủy request dễ dàng
+  Cá nhân tôi thích **axios** vì dễ xử lý JSON và quản lý lỗi hơn.
 
 ## Exercises: Level 2
 
 1. Find the average metric weight and life span of cats in the following [API](https://api.thecatapi.com/v1/breeds). There are 67 breeds of cats in the API.
+  * Tìm cân nặng trung bình (kg) và tuổi thọ trung bình (năm) của mèo từ API
 
 ![Average cat weight and age](../images/average_cat_weight_and_age.png)
 
+🇺🇸 **Solution using fetch:**
+
+```javascript
+async function getAverageCatData() {
+  try {
+    const response = await fetch('https://api.thecatapi.com/v1/breeds');
+    const breeds = await response.json();
+
+    let totalWeight = 0;
+    let totalAge = 0;
+    let count = breeds.length;
+
+    breeds.forEach(breed => {
+      // weight.metric example: "3 - 5"
+      const [minWeight, maxWeight] = breed.weight.metric.split(' - ').map(Number);
+      const avgWeight = (minWeight + maxWeight) / 2;
+      totalWeight += avgWeight;
+
+      // life_span example: "12 - 16"
+      const [minAge, maxAge] = breed.life_span.split(' - ').map(Number);
+      const avgAge = (minAge + maxAge) / 2;
+      totalAge += avgAge;
+    });
+
+    const averageWeight = (totalWeight / count).toFixed(2);
+    const averageAge = (totalAge / count).toFixed(2);
+
+    console.log(`Average cat weight: ${averageWeight} Kg`);
+    console.log(`Average cat lifespan: ${averageAge} years`);
+  } catch (error) {
+    console.error('Error fetching cat data:', error);
+  }
+}
+
+getAverageCatData();
+```
+
+🇻🇳 **Giải thích / Explanation:**
+
+* Gọi API `/v1/breeds` để lấy dữ liệu 67 giống mèo.
+* `weight.metric` là chuỗi `"min - max"`, tách ra và tính trung bình mỗi giống.
+* `life_span` cũng là chuỗi `"min - max"`, tách ra và tính trung bình.
+* Cuối cùng, lấy tổng chia số giống để ra **trung bình cân nặng và tuổi thọ**.
+* 
+### React Class Component với Axios
+```js
+import React, { Component } from 'react';
+import axios from 'axios';
+
+class AverageCatData extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      averageWeight: null,
+      averageLifespan: null,
+      loading: true,
+      error: null
+    };
+  }
+
+  componentDidMount() {
+    this.fetchCatData();
+  }
+
+  async fetchCatData() {
+    try {
+      const response = await axios.get('https://api.thecatapi.com/v1/breeds');
+      const breeds = response.data;
+
+      let totalWeight = 0;
+      let totalAge = 0;
+      let count = breeds.length;
+
+      breeds.forEach(breed => {
+        // weight.metric example: "3 - 5"
+        const [minWeight, maxWeight] = breed.weight.metric.split(' - ').map(Number);
+        const avgWeight = (minWeight + maxWeight) / 2;
+        totalWeight += avgWeight;
+
+        // life_span example: "12 - 16"
+        const [minAge, maxAge] = breed.life_span.split(' - ').map(Number);
+        const avgAge = (minAge + maxAge) / 2;
+        totalAge += avgAge;
+      });
+
+      const averageWeight = (totalWeight / count).toFixed(2);
+      const averageLifespan = (totalAge / count).toFixed(2);
+
+      this.setState({ averageWeight, averageLifespan, loading: false });
+    } catch (error) {
+      this.setState({ error: 'Error fetching cat data', loading: false });
+    }
+  }
+
+  render() {
+    const { averageWeight, averageLifespan, loading, error } = this.state;
+
+    if (loading) return <p>Loading... / Đang tải...</p>;
+    if (error) return <p>{error}</p>;
+
+    return (
+      <div>
+        <h2>Cat Statistics / Thống kê mèo</h2>
+        <p>Average weight / Cân nặng trung bình: {averageWeight} Kg</p>
+        <p>Average lifespan / Tuổi thọ trung bình: {averageLifespan} years</p>
+      </div>
+    );
+  }
+}
+
+export default AverageCatData;
+
+```
 ## Exercises: Level 3
 
 1. How many countries do have cat breeds?

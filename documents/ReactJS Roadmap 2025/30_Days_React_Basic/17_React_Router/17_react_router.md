@@ -30,6 +30,12 @@
 - [Exercises](#exercises)
   - [Exercises: Level 1](#exercises-level-1)
   - [Exercises: Level 2](#exercises-level-2)
+  - [Exercises: Level 2](#exercises-level-2-1)
+    - [**Option 1: Basic Class Component (Static Routes)** 🇺🇸 / 🇻🇳](#option-1-basic-class-component-static-routes---)
+    - [**Option 2: Class Component + JSON (Dynamic Routes)** 🇺🇸 / 🇻🇳](#option-2-class-component--json-dynamic-routes---)
+    - [**Option 3: Functional Component + Lazy Loading + JSON** 🇺🇸 / 🇻🇳](#option-3-functional-component--lazy-loading--json---)
+  - [**Option 4: Nested Routes + Subpages + JSON (Class Component)**](#option-4-nested-routes--subpages--json-class-component)
+  - [**Option 5: Class Component + JSON + Redirect + Prompt + 404 Page**](#option-5-class-component--json--redirect--prompt--404-page)
   - [Exercises: Level 3](#exercises-level-3)
 
 # React Router
@@ -1719,13 +1725,486 @@ ReactDOM.render(<App />, rootElement)
 
 ## Exercises: Level 1
 
-1. What package do you use to implement routing in react?
-2. What is the default export in react-router-dom?
-3. What is the use of the following Components(Route, NavLink, Switch, Redirect, Prompt)
+1. **What package do you use to implement routing in React?**
+   🇺🇸 `react-router-dom` is the most commonly used package for routing in React applications.
+   🇻🇳 `react-router-dom` là package phổ biến nhất để triển khai routing trong các ứng dụng React.
+
+2. **What is the default export in react-router-dom?**
+   🇺🇸 There is no single default export in `react-router-dom` v6. You import components like `BrowserRouter`, `Routes`, `Route`, `NavLink` individually.
+   🇻🇳 Trong `react-router-dom` v6 không có default export duy nhất. Bạn import các component như `BrowserRouter`, `Routes`, `Route`, `NavLink` riêng lẻ.
+
+3. **What is the use of the following Components (Route, NavLink, Switch, Redirect, Prompt)?**
+
+   | Component    | 🇺🇸 Use                                                                                              | 🇻🇳 Sử dụng                                                             |
+   | ------------ | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+   | **Route**    | Maps a URL path to a React component.                                                                 | Liên kết URL với một component React.                                    |
+   | **NavLink**  | Navigation link that can automatically apply an `active` class when the link matches the current URL. | Link điều hướng, tự động thêm class `active` khi URL trùng.              |
+   | **Switch**   | In v5, renders the first matching `Route`. In v6, use `Routes` instead.                               | Trong v5, render route đầu tiên trùng khớp. Trong v6, dùng `Routes`.     |
+   | **Redirect** | In v5, redirects to another route. In v6, use `<Navigate>` instead.                                   | Trong v5, chuyển hướng đến route khác. Trong v6, dùng `<Navigate>`.      |
+   | **Prompt**   | Prevents navigation if a condition is true (e.g., unsaved changes).                                   | Ngăn chặn chuyển hướng nếu điều kiện đúng (ví dụ: có thay đổi chưa lưu). |
+
+---
+
+## Exercises: Level 2
+
+**Now, you know about React router. Build your portfolio with React and implement React router for navigation.**
+🇺🇸 Build a portfolio using **class components** and implement React Router for navigation between pages like Home, About, Projects, and Contact.
+
+🇻🇳 Xây dựng một portfolio dùng **class components** và triển khai React Router để điều hướng giữa các trang như Home, About, Projects, và Contact.
+
+**Example (class components + React Router v6):**
+
+```jsx
+// App.js
+import React, { Component } from 'react';
+import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
+import Home from './Home';
+import About from './About';
+import Projects from './Projects';
+import Contact from './Contact';
+
+class App extends Component {
+  render() {
+    return (
+      <BrowserRouter>
+        <nav>
+          <NavLink to="/">Home</NavLink> | 
+          <NavLink to="/about">About</NavLink> | 
+          <NavLink to="/projects">Projects</NavLink> | 
+          <NavLink to="/contact">Contact</NavLink>
+        </nav>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
+      </BrowserRouter>
+    );
+  }
+}
+
+export default App;
+```
 
 ## Exercises: Level 2
 
 Now, you know about React router. Build your portfolio with React and implement React router for navigation.
+
+### **Option 1: Basic Class Component (Static Routes)** 🇺🇸 / 🇻🇳
+
+```jsx
+// App.js
+import React, { Component } from "react";
+import { BrowserRouter as Router, Route, NavLink, Switch } from "react-router-dom";
+
+// Pages
+class Home extends Component { render() { return <h2>Home</h2>; } }
+class About extends Component { render() { return <h2>About</h2>; } }
+class Portfolio extends Component { render() { return <h2>Portfolio</h2>; } }
+
+class App extends Component {
+  render() {
+    return (
+      <Router>
+        <nav>
+          <NavLink to="/">Home</NavLink>
+          <NavLink to="/about">About</NavLink>
+          <NavLink to="/portfolio">Portfolio</NavLink>
+        </nav>
+        <Switch>
+          <Route exact path="/" component={Home} />
+          <Route path="/about" component={About} />
+          <Route path="/portfolio" component={Portfolio} />
+        </Switch>
+      </Router>
+    );
+  }
+}
+
+export default App;
+```
+
+🇻🇳 **Giải thích:**
+
+* Các route được khai báo **cứng** trong App.js.
+* Dễ hiểu, nhanh, nhưng **khó mở rộng** khi có nhiều page.
+
+---
+
+### **Option 2: Class Component + JSON (Dynamic Routes)** 🇺🇸 / 🇻🇳
+
+```jsx
+// routes.js
+import Home from "./Home";
+import About from "./About";
+import Portfolio from "./Portfolio";
+
+export const routes = [
+  { path: "/", component: Home, name: "Home", exact: true },
+  { path: "/about", component: About, name: "About" },
+  { path: "/portfolio", component: Portfolio, name: "Portfolio" },
+];
+
+// App.js
+import React, { Component } from "react";
+import { BrowserRouter as Router, Route, NavLink, Switch } from "react-router-dom";
+import { routes } from "./routes";
+
+class App extends Component {
+  render() {
+    return (
+      <Router>
+        <nav>
+          {routes.map((r, idx) => (
+            <NavLink key={idx} to={r.path}>{r.name}</NavLink>
+          ))}
+        </nav>
+        <Switch>
+          {routes.map((r, idx) => (
+            <Route
+              key={idx}
+              path={r.path}
+              exact={r.exact}
+              component={r.component}
+            />
+          ))}
+        </Switch>
+      </Router>
+    );
+  }
+}
+
+export default App;
+```
+
+🇻🇳 **Giải thích:**
+
+* Routes được quản lý bằng **JSON**: `path`, `component`, `name`, `exact`.
+* Dễ dàng **thêm hoặc chỉnh sửa page** mà không cần thay đổi nhiều code.
+* Phù hợp cho dự án có nhiều page.
+
+---
+
+### **Option 3: Functional Component + Lazy Loading + JSON** 🇺🇸 / 🇻🇳
+
+```jsx
+// routes.js
+import React, { lazy } from "react";
+
+export const routes = [
+  { path: "/", component: lazy(() => import("./Home")), name: "Home", exact: true },
+  { path: "/about", component: lazy(() => import("./About")), name: "About" },
+  { path: "/portfolio", component: lazy(() => import("./Portfolio")), name: "Portfolio" },
+];
+
+// App.js
+import React, { Suspense } from "react";
+import { BrowserRouter as Router, Route, NavLink, Switch } from "react-router-dom";
+import { routes } from "./routes";
+
+function App() {
+  return (
+    <Router>
+      <nav>
+        {routes.map((r, idx) => (
+          <NavLink key={idx} to={r.path}>{r.name}</NavLink>
+        ))}
+      </nav>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Switch>
+          {routes.map((r, idx) => (
+            <Route
+              key={idx}
+              path={r.path}
+              exact={r.exact}
+              component={r.component}
+            />
+          ))}
+        </Switch>
+      </Suspense>
+    </Router>
+  );
+}
+
+export default App;
+```
+
+🇻🇳 **Giải thích:**
+
+* Functional component hiện đại + **lazy loading** giúp tải page khi cần.
+* Routes vẫn có thể dùng **JSON**, dễ quản lý và mở rộng.
+* Tối ưu **performance**, thích hợp cho portfolio lớn hoặc dự án thực tế.
+
+---
+
+💡 **Lưu ý về JSON cho routing:**
+
+* JSON có thể lưu `path`, `component`, `name`, `exact`, thậm chí `subRoutes` cho nested routes.
+* Dễ dàng tạo menu động, breadcrumb, hoặc sidebar dựa vào JSON.
+## **Option 4: Nested Routes + Subpages + JSON (Class Component)**
+
+```jsx
+// routes.js
+import Home from "./Home";
+import About from "./About";
+import Portfolio from "./Portfolio";
+import ProjectDetail from "./ProjectDetail";
+import Blog from "./Blog";
+import Contact from "./Contact";
+
+export const routes = [
+  { path: "/", component: Home, name: "Home", exact: true },
+  { path: "/about", component: About, name: "About" },
+  { 
+    path: "/portfolio", 
+    component: Portfolio, 
+    name: "Portfolio",
+    subRoutes: [
+      { path: "/portfolio/project1", component: ProjectDetail, name: "Project 1" },
+      { path: "/portfolio/project2", component: ProjectDetail, name: "Project 2" },
+    ]
+  },
+  { path: "/blog", component: Blog, name: "Blog" },
+  { path: "/contact", component: Contact, name: "Contact" },
+];
+```
+
+```jsx
+// App.js
+import React, { Component } from "react";
+import { BrowserRouter as Router, Route, NavLink, Switch } from "react-router-dom";
+import { routes } from "./routes";
+
+class App extends Component {
+  renderRoutes(routesArray) {
+    return routesArray.map((r, idx) => {
+      if (r.subRoutes) {
+        return (
+          <React.Fragment key={idx}>
+            <Route exact={r.exact} path={r.path} component={r.component} />
+            {this.renderRoutes(r.subRoutes)}
+          </React.Fragment>
+        );
+      } else {
+        return <Route key={idx} exact={r.exact} path={r.path} component={r.component} />;
+      }
+    });
+  }
+
+  renderNav(routesArray) {
+    return routesArray.map((r, idx) => {
+      if (r.subRoutes) {
+        return (
+          <div key={idx}>
+            <NavLink to={r.path}>{r.name}</NavLink>
+            <div style={{ paddingLeft: "20px" }}>
+              {this.renderNav(r.subRoutes)}
+            </div>
+          </div>
+        );
+      } else {
+        return <NavLink key={idx} to={r.path}>{r.name}</NavLink>;
+      }
+    });
+  }
+
+  render() {
+    return (
+      <Router>
+        <nav>
+          {this.renderNav(routes)}
+        </nav>
+        <Switch>
+          {this.renderRoutes(routes)}
+        </Switch>
+      </Router>
+    );
+  }
+}
+
+export default App;
+```
+
+---
+
+🇻🇳 **Giải thích Option 4:**
+
+1. **Nested Routes:**
+
+   * Portfolio có subpages (Project 1, Project 2).
+   * `subRoutes` trong JSON giúp quản lý con của page cha.
+
+2. **Dynamic Navigation:**
+
+   * Menu tự động hiển thị tất cả route, kể cả subpages, nhờ `renderNav`.
+
+3. **Dynamic Routes Rendering:**
+
+   * `renderRoutes` lặp qua JSON, tạo route cho cả parent và subpages.
+
+4. **Dễ mở rộng:**
+
+   * Thêm page mới chỉ cần cập nhật JSON, không cần thay đổi logic trong App.js.
+
+5. **Class Component:**
+
+   * Giữ nguyên class component cho portfolio truyền thống.
+
+---
+
+💡 **Tip:**
+
+* Có thể kết hợp với **lazy loading** cho subpages để tối ưu performance.
+* Có thể thêm `meta` field trong JSON (ví dụ: `authRequired`, `icon`, `description`) để dùng cho menu hoặc permission.
+
+
+
+---
+## **Option 5: Class Component + JSON + Redirect + Prompt + 404 Page**
+
+```jsx
+// routes.js
+import Home from "./Home";
+import About from "./About";
+import Portfolio from "./Portfolio";
+import ProjectDetail from "./ProjectDetail";
+import Blog from "./Blog";
+import Contact from "./Contact";
+import NotFound from "./NotFound";
+
+export const routes = [
+  { path: "/", component: Home, name: "Home", exact: true },
+  { path: "/about", component: About, name: "About" },
+  { 
+    path: "/portfolio", 
+    component: Portfolio, 
+    name: "Portfolio",
+    subRoutes: [
+      { path: "/portfolio/project1", component: ProjectDetail, name: "Project 1" },
+      { path: "/portfolio/project2", component: ProjectDetail, name: "Project 2" },
+    ]
+  },
+  { path: "/blog", component: Blog, name: "Blog" },
+  { path: "/contact", component: Contact, name: "Contact" },
+  { path: "/old-home", redirectTo: "/" }, // Redirect example
+  { path: "*", component: NotFound },    // 404 page
+];
+```
+
+```jsx
+// App.js
+import React, { Component } from "react";
+import { BrowserRouter as Router, Route, NavLink, Switch, Redirect, Prompt } from "react-router-dom";
+import { routes } from "./routes";
+
+class App extends Component {
+  state = {
+    isBlocking: false, // For Prompt example
+  };
+
+  renderRoutes(routesArray) {
+    return routesArray.map((r, idx) => {
+      if (r.redirectTo) {
+        return <Redirect key={idx} exact from={r.path} to={r.redirectTo} />;
+      } else if (r.subRoutes) {
+        return (
+          <React.Fragment key={idx}>
+            <Route exact={r.exact} path={r.path} component={r.component} />
+            {this.renderRoutes(r.subRoutes)}
+          </React.Fragment>
+        );
+      } else {
+        return <Route key={idx} exact={r.exact} path={r.path} component={r.component} />;
+      }
+    });
+  }
+
+  renderNav(routesArray) {
+    return routesArray.map((r, idx) => {
+      if (r.subRoutes) {
+        return (
+          <div key={idx}>
+            <NavLink to={r.path}>{r.name}</NavLink>
+            <div style={{ paddingLeft: "20px" }}>
+              {this.renderNav(r.subRoutes)}
+            </div>
+          </div>
+        );
+      } else if (!r.redirectTo && r.path !== "*") {
+        return <NavLink key={idx} to={r.path}>{r.name}</NavLink>;
+      } else return null;
+    });
+  }
+
+  toggleBlocking = () => {
+    this.setState((prev) => ({ isBlocking: !prev.isBlocking }));
+  };
+
+  render() {
+    return (
+      <Router>
+        <nav>
+          {this.renderNav(routes)}
+        </nav>
+
+        <button onClick={this.toggleBlocking}>
+          {this.state.isBlocking ? "Stop Blocking" : "Start Blocking"}
+        </button>
+
+        <Prompt
+          when={this.state.isBlocking}
+          message="Are you sure you want to leave this page?"
+        />
+
+        <Switch>
+          {this.renderRoutes(routes)}
+        </Switch>
+      </Router>
+    );
+  }
+}
+
+export default App;
+```
+
+---
+
+🇻🇳 **Giải thích Option 5:**
+
+1. **Redirect:**
+
+   * Ví dụ `/old-home` tự động chuyển về `/`.
+
+2. **Prompt:**
+
+   * Cảnh báo người dùng khi rời trang (ví dụ: form chưa submit).
+   * `isBlocking` state điều khiển.
+
+3. **404 Page:**
+
+   * Route với path `"*"` sẽ hiển thị `NotFound` khi URL không khớp route nào.
+
+4. **Nested Routes + JSON:**
+
+   * Giữ nguyên khả năng subpages trong portfolio (Project 1, Project 2).
+
+5. **Class Component:**
+
+   * Giữ phong cách class component truyền thống.
+
+6. **Dynamic Navigation & Dynamic Routes:**
+
+   * Tự động render menu và routes dựa trên JSON.
+   * Dễ mở rộng: chỉ cần thêm route mới trong JSON.
+
+---
+
+💡 **Tip nâng cao:**
+
+* Có thể kết hợp **lazy loading + Suspense** cho từng component để tối ưu load.
+* JSON routes có thể thêm metadata (`authRequired`, `icon`, `description`) dùng cho menu, breadcrumb hoặc permission system.
+
 
 ## Exercises: Level 3
 

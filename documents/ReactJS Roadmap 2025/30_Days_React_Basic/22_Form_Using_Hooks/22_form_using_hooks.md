@@ -942,27 +942,307 @@ ReactDOM.render(<App />, rootElement)
 
 # Exercises
 
-## Exercises: Level 1
+## Exercises: Level 1 – Forms & Inputs
 
-1. What is the importance of form?
-2. How many input types do you know?
-3. Mention at least four attributes of an input element
-4. What is the importance of htmlFor?
-5. Write an input type which is not given in the example if there is?
-6. What is a controlled input?
-7. What do you need to write a controlled input?
-8. What event type do you use to listen changes on an input field?
-9. What is the value of a checked checkbox?
-10. When do you use onChange, onBlur, onSubmit?
-11. What is the purpose of writing e.preventDefault() inside the submit handler method?
-12. How do you bind data in React? The first input field example is data binding in React.
-13. What is validation?
-14. What is the event type you use to listen when an input changes?
-15. What are event types do you use to validate an input?
+### 1. What is the importance of form?
 
-## Exercises: Level 2
+🇺🇸 **Answer:** Forms are important to collect input from users, submit data to a server, and handle user interactions in a structured way.
+🇻🇳 **Giải thích:** Form giúp thu thập dữ liệu từ người dùng, gửi dữ liệu lên server và quản lý tương tác của người dùng một cách có cấu trúc.
 
-1. Validate the form given above (a gif image or a video will be provided later). First try to validate without using any library then try it with [validator.js](https://www.npmjs.com/package/validator).
+---
+
+### 2. How many input types do you know?
+
+🇺🇸 **Answer:** There are many types of input: `text`, `password`, `email`, `number`, `checkbox`, `radio`, `file`, `date`, `color`, `range`, `url`, `tel`, `search`, `hidden`, `submit`, `reset`, `button`.
+🇻🇳 **Giải thích:** HTML cung cấp nhiều loại input: `text`, `password`, `email`, `number`, `checkbox`, `radio`, `file`, `date`, `color`, `range`, `url`, `tel`, `search`, `hidden`, `submit`, `reset`, `button`.
+
+---
+
+### 3. Mention at least four attributes of an input element
+
+🇺🇸 **Answer:** Common attributes: `type`, `name`, `value`, `placeholder`, `id`, `checked`, `disabled`, `required`.
+🇻🇳 **Giải thích:** Các thuộc tính phổ biến: `type`, `name`, `value`, `placeholder`, `id`, `checked`, `disabled`, `required`.
+
+---
+
+### 4. What is the importance of htmlFor?
+
+🇺🇸 **Answer:** `htmlFor` associates a `<label>` with an input field. Clicking the label focuses the input.
+🇻🇳 **Giải thích:** `htmlFor` liên kết `<label>` với input. Khi click vào label, input được focus.
+
+---
+
+### 5. Write an input type which is not given in the example if there is?
+
+🇺🇸 **Answer:** `color`, `range`, `month`, `week`, `time`, `datetime-local`, `search`, `tel`, `url`.
+🇻🇳 **Giải thích:** Một số type input khác: `color`, `range`, `month`, `week`, `time`, `datetime-local`, `search`, `tel`, `url`.
+
+---
+
+### 6. What is a controlled input?
+
+🇺🇸 **Answer:** A controlled input is an input element whose value is controlled by React state. The input’s value always reflects the state.
+🇻🇳 **Giải thích:** Controlled input là input mà giá trị được quản lý bởi state của React, luôn đồng bộ với state.
+
+---
+
+### 7. What do you need to write a controlled input?
+
+🇺🇸 **Answer:** You need a state variable to hold the input value and an `onChange` handler to update the state.
+🇻🇳 **Giải thích:** Cần 1 biến state lưu giá trị input và 1 hàm `onChange` để cập nhật state.
+
+---
+
+### 8. What event type do you use to listen changes on an input field?
+
+🇺🇸 **Answer:** `onChange` event.
+🇻🇳 **Giải thích:** Sử dụng sự kiện `onChange`.
+
+---
+
+### 9. What is the value of a checked checkbox?
+
+🇺🇸 **Answer:** `true` if checked, `false` if unchecked. The value of `checked` attribute controls it.
+🇻🇳 **Giải thích:** `true` nếu checked, `false` nếu unchecked. Thuộc tính `checked` xác định trạng thái.
+
+---
+
+### 10. When do you use onChange, onBlur, onSubmit?
+
+🇺🇸 **Answer:**
+
+* `onChange`: when input value changes.
+* `onBlur`: when input loses focus.
+* `onSubmit`: when a form is submitted.
+
+🇻🇳 **Giải thích:**
+
+* `onChange`: khi giá trị input thay đổi.
+* `onBlur`: khi input mất focus.
+* `onSubmit`: khi form được submit.
+
+---
+
+### 11. What is the purpose of writing e.preventDefault() inside the submit handler method?
+
+🇺🇸 **Answer:** To prevent the default browser behavior of refreshing the page on form submit.
+🇻🇳 **Giải thích:** Ngăn trình duyệt reload trang khi submit form.
+
+---
+
+### 12. How do you bind data in React? The first input field example is data binding in React.
+
+🇺🇸 **Answer:** You bind data using state and set the input’s `value` to the state, updating it via `onChange`.
+🇻🇳 **Giải thích:** Liên kết dữ liệu bằng state, gán `value={state}` cho input và cập nhật state bằng `onChange`.
+
+---
+
+### 13. What is validation?
+
+🇺🇸 **Answer:** Validation is the process of checking if the input data is correct, complete, and follows rules.
+🇻🇳 **Giải thích:** Validation là quá trình kiểm tra dữ liệu input có hợp lệ, đầy đủ và tuân theo quy tắc không.
+
+---
+
+### 14. What is the event type you use to listen when an input changes?
+
+🇺🇸 **Answer:** `onChange`.
+🇻🇳 **Giải thích:** Dùng sự kiện `onChange`.
+
+---
+
+### 15. What are event types do you use to validate an input?
+
+🇺🇸 **Answer:** `onChange`, `onBlur`, `onSubmit`. You can validate as the user types (`onChange`), when input loses focus (`onBlur`), or when the form is submitted (`onSubmit`).
+🇻🇳 **Giải thích:** Sử dụng `onChange`, `onBlur`, `onSubmit`. Validate khi người dùng gõ (`onChange`), khi input mất focus (`onBlur`) hoặc khi submit form (`onSubmit`).
+
+
+## Exercises: Level 2 – Form Validation
+
+**Task / Nhiệm vụ:**
+Validate the form given in Level 1. Try **first without any library**, then **using `validator.js`**.
+
+---
+
+### 1️⃣ Version 1 – Plain React (No library)
+
+```javascript
+import React, { useState } from 'react';
+
+const SimpleForm = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    age: ''
+  });
+
+  const [errors, setErrors] = useState({});
+
+  const handleChange = e => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const validate = () => {
+    const newErrors = {};
+
+    // Name required
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required / Tên là bắt buộc';
+    }
+
+    // Email format
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required / Email là bắt buộc';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email is invalid / Email không hợp lệ';
+    }
+
+    // Age must be number > 0
+    if (!formData.age.trim()) {
+      newErrors.age = 'Age is required / Tuổi là bắt buộc';
+    } else if (!/^\d+$/.test(formData.age) || Number(formData.age) <= 0) {
+      newErrors.age = 'Age must be a positive number / Tuổi phải là số dương';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    if (validate()) {
+      alert('Form submitted successfully! / Gửi form thành công!');
+      console.log(formData);
+      // reset form
+      setFormData({ name: '', email: '', age: '' });
+      setErrors({});
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: '0 auto' }}>
+      <div>
+        <label htmlFor="name">Name / Tên:</label>
+        <input type="text" name="name" id="name" value={formData.name} onChange={handleChange} />
+        {errors.name && <p style={{ color: 'red' }}>{errors.name}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="email">Email:</label>
+        <input type="email" name="email" id="email" value={formData.email} onChange={handleChange} />
+        {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="age">Age / Tuổi:</label>
+        <input type="text" name="age" id="age" value={formData.age} onChange={handleChange} />
+        {errors.age && <p style={{ color: 'red' }}>{errors.age}</p>}
+      </div>
+
+      <button type="submit">Submit / Gửi</button>
+    </form>
+  );
+};
+
+export default SimpleForm;
+```
+
+**🇻🇳 Giải thích:**
+
+1. Dùng `useState` để lưu form data và errors.
+2. `validate()` kiểm tra từng trường input: required, email format, age positive number.
+3. `handleSubmit` gọi validate và ngăn reload trang bằng `e.preventDefault()`.
+4. Hiển thị lỗi dưới input nếu có.
+
+---
+
+### 2️⃣ Version 2 – Using `validator.js`
+
+```javascript
+import React, { useState } from 'react';
+import validator from 'validator';
+
+const FormWithValidator = () => {
+  const [formData, setFormData] = useState({ name: '', email: '', age: '' });
+  const [errors, setErrors] = useState({});
+
+  const handleChange = e => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const validate = () => {
+    const newErrors = {};
+
+    if (validator.isEmpty(formData.name)) {
+      newErrors.name = 'Name is required / Tên là bắt buộc';
+    }
+
+    if (validator.isEmpty(formData.email)) {
+      newErrors.email = 'Email is required / Email là bắt buộc';
+    } else if (!validator.isEmail(formData.email)) {
+      newErrors.email = 'Email is invalid / Email không hợp lệ';
+    }
+
+    if (validator.isEmpty(formData.age)) {
+      newErrors.age = 'Age is required / Tuổi là bắt buộc';
+    } else if (!validator.isInt(formData.age, { min: 1 })) {
+      newErrors.age = 'Age must be a positive number / Tuổi phải là số dương';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    if (validate()) {
+      alert('Form submitted successfully! / Gửi form thành công!');
+      console.log(formData);
+      setFormData({ name: '', email: '', age: '' });
+      setErrors({});
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: '0 auto' }}>
+      <div>
+        <label htmlFor="name">Name / Tên:</label>
+        <input type="text" name="name" id="name" value={formData.name} onChange={handleChange} />
+        {errors.name && <p style={{ color: 'red' }}>{errors.name}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="email">Email:</label>
+        <input type="email" name="email" id="email" value={formData.email} onChange={handleChange} />
+        {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="age">Age / Tuổi:</label>
+        <input type="text" name="age" id="age" value={formData.age} onChange={handleChange} />
+        {errors.age && <p style={{ color: 'red' }}>{errors.age}</p>}
+      </div>
+
+      <button type="submit">Submit / Gửi</button>
+    </form>
+  );
+};
+
+export default FormWithValidator;
+```
+
+**🇻🇳 Giải thích:**
+
+1. `validator.js` cung cấp các hàm tiện lợi: `isEmpty`, `isEmail`, `isInt`.
+2. Validation logic ngắn gọn, dễ bảo trì.
+3. Giao diện và xử lý giống phiên bản không library.
+
+---
+
+✅ **Ưu điểm:**
+
+* Version 1: Không cần thêm dependency, học cách tự viết validation.
+* Version 2: Code ngắn gọn, chuẩn hóa, dễ scale, dùng thư viện đáng tin cậy.
 
 ## Exercises: Level 3
 

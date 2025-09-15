@@ -191,17 +191,91 @@ ReactDOM.render(<App />, rootElement)
 The is above example is one use case of Higher Order Component. However, its use case is is more than just styling simple button. It has enormous use cases, it allow us to reuse component and enhance a component with style and functionality. In the coming sections, we will cover React Router and we will use HOC and you will not be surprised when you see one component wrap another component.
 
 # Exercises
-
 ## Exercises: Level 1
 
 1. What is higher order function
+
+* 🇺🇸 Higher-order function is a function that **takes another function as an argument or returns a function**.
+* 🇻🇳 Hàm bậc cao là hàm **nhận một hàm khác làm tham số hoặc trả về một hàm**.
+
+---
+
 2. What is Higher Order Component
+
+* 🇺🇸 A higher-order component (HOC) is a function that **takes a component and returns a new enhanced component**.
+* 🇻🇳 HOC là một hàm **nhận một component và trả về một component mới được mở rộng**.
+
+---
+
 3. What is the difference between higher order function and higher order component?
+
+* 🇺🇸 Higher-order function → works with **functions**.
+  Higher-order component → works with **React components**.
+* 🇻🇳 Hàm bậc cao → làm việc với **hàm**.
+  HOC → làm việc với **component React**.
+
+---
+
 4. A higher order component can allow us to enhance a component. (T or F)
+
+* 🇺🇸 True ✅
+* 🇻🇳 Đúng ✅
+
+---
 
 ## Exercises: Level 2
 
-1. Make a higher order component which can handle all the input type.
+1. Make a higher order component which can handle all the input type
+
+```jsx
+import React, { Component } from "react";
+
+// Higher Order Component
+const withInputHandler = WrappedComponent => {
+  return class extends Component {
+    state = { value: "" };
+
+    handleChange = e => this.setState({ value: e.target.value });
+
+    render() {
+      return (
+        <WrappedComponent
+          {...this.props}
+          value={this.state.value}
+          onChange={this.handleChange}
+        />
+      );
+    }
+  };
+};
+
+// Example input component
+class TextInput extends Component {
+  render() {
+    return <input type={this.props.type || "text"} value={this.props.value} onChange={this.props.onChange} />;
+  }
+}
+
+// Wrapped component
+const EnhancedInput = withInputHandler(TextInput);
+
+// Usage
+export default class App extends Component {
+  render() {
+    return (
+      <div>
+        <EnhancedInput type="text" placeholder="Text input" />
+        <EnhancedInput type="email" placeholder="Email input" />
+        <EnhancedInput type="password" placeholder="Password input" />
+      </div>
+    );
+  }
+}
+```
+
+* 🇺🇸 The HOC `withInputHandler` handles **state and onChange** for any input type.
+* 🇻🇳 HOC `withInputHandler` quản lý **state và onChange** cho bất kỳ loại input nào.
+
 
 ## Exercises: Level 3
 

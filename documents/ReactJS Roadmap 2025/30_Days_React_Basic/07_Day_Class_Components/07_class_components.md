@@ -822,15 +822,91 @@ In next section, we will cover state which is the heart of React. State allows R
 
 ## Exercises: Level 1
 
-1. How do you write a pure JavaScript function
+1. How do you write a pure JavaScript function?
+   → Làm thế nào để viết một hàm JavaScript thuần?
+
+A pure JavaScript function always returns the same output for the same input and has no side effects.
+→ Một hàm JavaScript thuần luôn trả về cùng một kết quả cho cùng một input và không có tác động phụ.
+
+---
+
 2. What is inheritance and how do you make a child from a parent class?
-3. What is class based React component ?
-4. What is the difference between functional React component and class based React component ?
-5. When do we need to use class based components instead of functional components
-6. What is the use cases of class based component ?
-7. Which type of component do use most frequently ? functional or class-based component
-8. What is React life cycle ? (not covered yet) ?
-9. What is state in React ? (not covered yet)
+   → Kế thừa là gì và làm thế nào để tạo lớp con từ lớp cha?
+
+Inheritance is a mechanism in object-oriented programming where a child class can inherit properties and methods from a parent class.
+→ Kế thừa là cơ chế trong lập trình hướng đối tượng, cho phép lớp con thừa hưởng thuộc tính và phương thức của lớp cha.
+
+You can create a child class in JavaScript using `extends`:
+→ Bạn có thể tạo lớp con trong JavaScript bằng cách dùng `extends`:
+
+```js
+class Parent {
+  greet() { console.log("Hello"); }
+}
+class Child extends Parent {
+  // inherits greet() from Parent
+}
+```
+
+---
+
+3. What is class-based React component?
+   → Class-based React component là gì?
+
+A class-based React component is a component defined using a JavaScript class that extends `React.Component`, allowing it to have state and lifecycle methods.
+→ Class-based React component là component được định nghĩa bằng class kế thừa `React.Component`, có thể có state và lifecycle methods.
+
+---
+
+4. What is the difference between functional React component and class-based React component?
+   → Sự khác nhau giữa functional React component và class-based React component là gì?
+
+Functional components are simple functions that return JSX and can use hooks.
+→ Functional component là hàm trả về JSX và có thể dùng hooks.
+
+Class-based components are classes that extend `React.Component` and can have state and lifecycle methods.
+→ Class-based component là class kế thừa `React.Component`, có state và lifecycle methods.
+
+---
+
+5. When do we need to use class-based components instead of functional components?
+   → Khi nào chúng ta cần dùng class-based component thay vì functional component?
+
+Before React hooks existed, class-based components were needed for state and lifecycle methods.
+→ Trước khi React hooks ra đời, cần dùng class-based components để quản lý state và lifecycle.
+
+---
+
+6. What is the use cases of class-based component?
+   → Các trường hợp sử dụng class-based component là gì?
+
+Class-based components are used when you need state or lifecycle methods without hooks, mostly in older React versions.
+→ Class-based components được dùng khi cần state hoặc lifecycle methods mà không dùng hooks, chủ yếu trong các phiên bản React cũ.
+
+---
+
+7. Which type of component do you use most frequently? functional or class-based component?
+   → Bạn thường sử dụng loại component nào hơn? Functional hay class-based?
+
+Nowadays, functional components with hooks are used more frequently because they are simpler and easier to read.
+→ Hiện nay, functional components với hooks được dùng nhiều hơn vì đơn giản và dễ đọc hơn.
+
+---
+
+8. What is React life cycle? (not covered yet)
+   → React life cycle là gì? (chưa học phần này)
+
+React lifecycle refers to the sequence of methods called at different stages of a component's existence (mounting, updating, unmounting).
+→ React lifecycle là chuỗi các phương thức được gọi ở các giai đoạn khác nhau của một component, ví dụ mounting, updating, unmounting.
+
+---
+
+9. What is state in React? (not covered yet)
+   → State trong React là gì? (chưa học phần này)
+
+State is a built-in object in React components that allows components to manage dynamic data and re-render the UI when data changes.
+→ State là object có sẵn trong React component, cho phép quản lý dữ liệu động và render lại UI khi dữ liệu thay đổi.
+
 
 ## Exercises: Level 2
 

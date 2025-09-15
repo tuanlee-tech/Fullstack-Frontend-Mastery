@@ -24,8 +24,8 @@
   - [Components Folder](#components-folder)
   - [Fragments](#fragments)
 - [Exercises](#exercises)
-  - [Exercises:Level 1](#exerciseslevel-1)
-  - [Exercises:Level 2](#exerciseslevel-2)
+  - [**Exercises: Level 1 – React Folder Structure \& Modules (Class Components)**](#exercises-level-1--react-folder-structure--modules-class-components)
+  - [**Exercises: Level 2 – Simple Portfolio with Dark Mode (Class Components)**](#exercises-level-2--simple-portfolio-with-dark-mode-class-components)
   - [Exercises: Level 3](#exercises-level-3)
 
 # React Project Folder Structure and File Naming
@@ -601,18 +601,187 @@ Well done. Time to do some exercises for your brain and muscles.
 
 # Exercises
 
-## Exercises:Level 1
+## **Exercises: Level 1 – React Folder Structure & Modules (Class Components)**
 
-1. What is the importance of React Folder Structure and File Naming
-2. How do you export file
-3. How do you  import file
-4. Make a component of module and export it as named or default export
-5. Make a component or module and import it
-6. Change all the components you have to different folder structure
+**1. What is the importance of React Folder Structure and File Naming?**
 
-## Exercises:Level 2
+* Giúp dự án **tổ chức rõ ràng**, dễ maintain.
+* Ví dụ: tách `components/`, `pages/`, `utils/`, `assets/` thành các folder riêng.
+* File naming nhất quán giúp **team hiểu nhanh** và **tránh nhầm lẫn**.
 
-1. Make a simple portfolio using the components we have created so far. Implement a dark mode by using the function we wrote on day 8 challenge.
+---
+
+**2. How do you export a file?**
+
+* **Default export:**
+
+```jsx
+// components/Greeting.js
+import React, { Component } from "react";
+
+export default class Greeting extends Component {
+  render() {
+    return <div>Hello, {this.props.name}!</div>;
+  }
+}
+```
+
+* **Named export:**
+
+```jsx
+// components/Utils.js
+export class MathUtils {
+  static square(n) { return n * n; }
+  static cube(n) { return n * n * n; }
+}
+```
+
+---
+
+**3. How do you import a file?**
+
+* **Default export:**
+
+```jsx
+import Greeting from "./components/Greeting";
+```
+
+* **Named export:**
+
+```jsx
+import { MathUtils } from "./components/Utils";
+```
+
+---
+
+**4. Make a component or module and export it as named or default export**
+
+```jsx
+// components/Header.js
+import React, { Component } from "react";
+
+export default class Header extends Component {
+  render() {
+    return <h1>Welcome to My App</h1>;
+  }
+}
+
+// components/Constants.js
+export const APP_NAME = "My React App";
+export const VERSION = "1.0.0";
+```
+
+---
+
+**5. Make a component or module and import it**
+
+```jsx
+// App.js
+import React, { Component } from "react";
+import Header from "./components/Header";
+import Greeting from "./components/Greeting";
+import { MathUtils } from "./components/Utils";
+import { APP_NAME } from "./components/Constants";
+
+export default class App extends Component {
+  render() {
+    return (
+      <div>
+        <Header />
+        <Greeting name="Tuân" />
+        <p>Square of 4: {MathUtils.square(4)}</p>
+        <p>App Name: {APP_NAME}</p>
+      </div>
+    );
+  }
+}
+```
+
+---
+
+**6. Change all the components you have to different folder structure**
+
+* Ví dụ folder structure:
+
+```
+src/
+ ├─ components/
+ │    ├─ Greeting.js
+ │    ├─ Header.js
+ │    └─ Utils.js
+ ├─ constants/
+ │    └─ Constants.js
+ ├─ pages/
+ │    └─ Home.js
+ ├─ App.js
+ └─ index.js
+```
+
+* Khi đó các import sẽ theo **relative path**.
+
+---
+
+## **Exercises: Level 2 – Simple Portfolio with Dark Mode (Class Components)**
+
+```jsx
+// components/Portfolio.js
+import React, { Component } from "react";
+import Greeting from "./Greeting";
+
+export default class Portfolio extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      darkMode: false,
+    };
+  }
+
+  toggleDarkMode = () => {
+    this.setState(prevState => ({ darkMode: !prevState.darkMode }));
+  };
+
+  render() {
+    const { darkMode } = this.state;
+    const style = {
+      backgroundColor: darkMode ? "#222" : "#fff",
+      color: darkMode ? "#fff" : "#000",
+      minHeight: "100vh",
+      padding: "20px",
+    };
+
+    return (
+      <div style={style}>
+        <button onClick={this.toggleDarkMode}>
+          {darkMode ? "Light Mode" : "Dark Mode"}
+        </button>
+
+        <h1>My Portfolio</h1>
+        <Greeting name="Tuân" />
+        <p>About me: React developer</p>
+      </div>
+    );
+  }
+}
+```
+
+```jsx
+// App.js
+import React, { Component } from "react";
+import Portfolio from "./components/Portfolio";
+
+export default class App extends Component {
+  render() {
+    return <Portfolio />;
+  }
+}
+```
+
+✅ **Logic explanation:**
+
+* `state.darkMode` lưu trạng thái sáng/tối.
+* `toggleDarkMode` thay đổi state khi click nút.
+* Portfolio kết hợp các component nhỏ (`Greeting`) và áp dụng **conditional style**.
+
 
 ## Exercises: Level 3
 

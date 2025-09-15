@@ -489,14 +489,78 @@ I believe that now you have a very good understanding of state. After this, we w
 ### Exercises: Level 1
 
 1. What was your state today? Are you happy? I hope so. If you manage to make it this far you should be happy.
-2. What is state in React ?
-3. What is the difference between props and state in React ?
-4. How do you access state in a React component ?
-5. How do you set a set in a React component ?
+   → Tâm trạng của bạn hôm nay thế nào? Bạn có vui không? Mình hy vọng là có. Nếu bạn đã làm được đến đây thì bạn nên vui.
+
+---
+
+2. What is state in React?
+   → State trong React là gì?
+
+State is a built-in object in React components that allows components to manage dynamic data and re-render the UI when data changes.
+→ State là object có sẵn trong React component, cho phép quản lý dữ liệu động và render lại UI khi dữ liệu thay đổi.
+
+---
+
+3. What is the difference between props and state in React?
+   → Sự khác nhau giữa props và state trong React là gì?
+
+Props are used to pass data from parent to child components and are read-only.
+→ Props dùng để truyền dữ liệu từ component cha xuống component con và chỉ đọc được.
+
+State is used to manage data within a component and can change over time.
+→ State dùng để quản lý dữ liệu bên trong component và có thể thay đổi theo thời gian.
+
+---
+
+4. How do you access state in a React component?
+   → Làm thế nào để truy cập state trong React component?
+
+In class components, you access state using `this.state`.
+→ Trong class component, bạn truy cập state bằng `this.state`.
+
+In functional components, you access state using the `useState` hook.
+→ Trong functional component, bạn truy cập state bằng hook `useState`.
+
+---
+
+5. How do you set a state in a React component?
+   → Làm thế nào để thay đổi state trong React component?
+
+In class components, you use `this.setState()` to update state.
+→ Trong class component, bạn dùng `this.setState()` để cập nhật state.
+
+In functional components, you use the setter function returned by `useState`, e.g., `setCount(newValue)`.
+→ Trong functional component, bạn dùng hàm setter được trả về bởi `useState`, ví dụ: `setCount(newValue)`.
+
+---
 
 ### Exercises: Level 2
 
 1. Use React state to change the background of the page. You can use this technique to apply a dark mode for your portfolio.
+   → Sử dụng state trong React để thay đổi màu nền của trang. Bạn có thể dùng kỹ thuật này để tạo chế độ tối (dark mode) cho portfolio của mình.
+
+Example in functional component:
+
+```js
+import React, { useState } from "react";
+
+function App() {
+  const [darkMode, setDarkMode] = useState(false);
+
+  const toggleMode = () => setDarkMode(!darkMode);
+
+  return (
+    <div style={{ background: darkMode ? "#333" : "#fff", color: darkMode ? "#fff" : "#000", height: "100vh" }}>
+      <button onClick={toggleMode}>
+        {darkMode ? "Light Mode" : "Dark Mode"}
+      </button>
+      <h1>Hello World</h1>
+    </div>
+  );
+}
+
+export default App;
+```
 
 ![Change Background](../images/08_day_changing_background_exercise.gif)
 
@@ -504,6 +568,103 @@ I believe that now you have a very good understanding of state. After this, we w
 
 ![Change Background](../images/08_day_select_country_exercise.gif)
 
+```jsx
+import React, { Component } from "react";
+
+const countries = [
+  {
+    name: "Netherlands",
+    capital: "Amsterdam",
+    language: "Dutch",
+    population: "17,019,800",
+    currency: "Euro",
+    flag: "https://restcountries.com/data/nld.svg",
+  },
+  {
+    name: "France",
+    capital: "Paris",
+    language: "French",
+    population: "67,022,000",
+    currency: "Euro",
+    flag: "https://restcountries.com/data/fra.svg",
+  },
+  {
+    name: "Japan",
+    capital: "Tokyo",
+    language: "Japanese",
+    population: "126,476,461",
+    currency: "Yen",
+    flag: "https://restcountries.com/data/jpn.svg",
+  },
+  // bạn có thể thêm nhiều country khác
+];
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedCountry: null,
+    };
+  }
+
+  handleRandomCountry = () => {
+    const randomIndex = Math.floor(Math.random() * countries.length);
+    this.setState({ selectedCountry: countries[randomIndex] });
+  };
+
+  render() {
+    const { selectedCountry } = this.state;
+
+    return (
+      <div style={{ textAlign: "center", padding: "50px", fontFamily: "Arial" }}>
+        <h1>30 Days Of React</h1>
+        <h3>Getting Started React</h3>
+
+        {selectedCountry && (
+          <div
+            style={{
+              display: "inline-block",
+              padding: "20px",
+              border: "1px solid #ccc",
+              borderRadius: "5px",
+              marginTop: "20px",
+            }}
+          >
+            <img
+              src={selectedCountry.flag}
+              alt={selectedCountry.name}
+              style={{ width: "150px", height: "100px", objectFit: "cover" }}
+            />
+            <h2>{selectedCountry.name}</h2>
+            <p><b>Capital:</b> {selectedCountry.capital}</p>
+            <p><b>Language:</b> {selectedCountry.language}</p>
+            <p><b>Population:</b> {selectedCountry.population}</p>
+            <p><b>Currency:</b> {selectedCountry.currency}</p>
+          </div>
+        )}
+
+        <br />
+        <button
+          onClick={this.handleRandomCountry}
+          style={{
+            marginTop: "20px",
+            padding: "10px 20px",
+            backgroundColor: "#00bfff",
+            color: "#fff",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+        >
+          Select Country
+        </button>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
 ### Exercises: Level 3
 
 Coming

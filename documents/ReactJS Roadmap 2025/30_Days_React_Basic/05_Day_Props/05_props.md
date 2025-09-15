@@ -34,6 +34,11 @@
   - [defaultProps](#defaultprops)
 - [Exercises: Components and Props](#exercises-components-and-props)
   - [Exercises: Level 1](#exercises-level-1)
+    - [1. What is props in a React component?](#1-what-is-props-in-a-react-component)
+    - [2. How do you access props in a React component?](#2-how-do-you-access-props-in-a-react-component)
+    - [3. What data types can we pass as props to components?](#3-what-data-types-can-we-pass-as-props-to-components)
+    - [4. What is a propTypes?](#4-what-is-a-proptypes)
+    - [5. What is a default propTypes?](#5-what-is-a-default-proptypes)
   - [Exercises: Level 2](#exercises-level-2)
   - [Exercises: Level 3](#exercises-level-3)
 
@@ -1069,11 +1074,90 @@ We will cover propTypes in detail in other sections.
 
 ## Exercises: Level 1
 
-1. What is props in a React component ?
-2. How do you access props in a React component ?
-3. What data types can we pass as props to components ?
-4. What is a propTypes?
-5. What is a default propTypes?
+### 1. What is props in a React component?
+
+Props trong một React component là gì?
+
+👉 **Answer:**
+Props (short for "properties") are inputs to a React component that allow data to be passed from a parent component to a child component.
+👉 Props (viết tắt của "properties") là dữ liệu được truyền từ component cha xuống component con, giúp component con nhận thông tin từ bên ngoài.
+
+---
+
+### 2. How do you access props in a React component?
+
+Làm thế nào để truy cập props trong một React component?
+
+👉 **Answer:**
+In a functional component, props are accessed as a function parameter:
+
+```jsx
+const Greeting = (props) => {
+  return <h1>Hello, {props.name}!</h1>;
+};
+```
+
+Or by destructuring:
+
+```jsx
+const Greeting = ({ name }) => <h1>Hello, {name}!</h1>;
+```
+
+In a class component, props are accessed via `this.props`:
+
+```jsx
+class Greeting extends React.Component {
+  render() {
+    return <h1>Hello, {this.props.name}!</h1>;
+  }
+}
+```
+
+👉 Trong component hàm, props được truy cập qua tham số hàm. Có thể dùng destructuring để gọn hơn.
+Trong class component, props được truy cập qua `this.props`.
+
+---
+
+### 3. What data types can we pass as props to components?
+
+Chúng ta có thể truyền những kiểu dữ liệu nào làm props cho component?
+
+👉 **Answer:**
+Props can be any valid JavaScript data type:
+
+* String, Number, Boolean
+* Array, Object
+* Function
+* JSX / React elements
+
+👉 Props có thể là bất kỳ kiểu dữ liệu JavaScript hợp lệ nào:
+
+* String, Number, Boolean
+* Array, Object
+* Function
+* JSX / React elements
+
+---
+
+### 4. What is a propTypes?
+
+PropTypes là gì?
+
+👉 **Answer:**
+PropTypes is a feature in React used for type checking props. It helps validate that a component receives props of the correct type.
+
+👉 PropTypes là tính năng trong React dùng để kiểm tra kiểu dữ liệu của props, giúp đảm bảo component nhận đúng loại dữ liệu.
+
+---
+
+### 5. What is a default propTypes?
+
+Default propTypes là gì?
+
+👉 **Answer:**
+Default props are values assigned to props if the parent component does not provide them. They ensure the component has a default value to use.
+
+👉 Default props là giá trị mặc định được gán cho props nếu component cha không truyền dữ liệu. Điều này đảm bảo component vẫn hoạt động với giá trị mặc định.
 
 ## Exercises: Level 2
 
