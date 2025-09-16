@@ -307,4 +307,4 @@ Bạn có muốn mình làm tiếp **Day 15: Polymorphism & Composition Patterns
 ---
 
 
-[<< Ngày 13](./Day13.md) | [Ngày 16 >>](./Day16.md)
+[<< Ngày 13](./Day13.md) | [Ngày 15 >>](./Day15.md)
