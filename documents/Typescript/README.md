@@ -44,7 +44,7 @@
 * **Day 24:** TypeScript Config Deep Dive (`strict`, `noImplicitAny`, performance flags).
 * **Day 25:** API Layer — Fetch/Axios với Generic `ApiResponse<T>`.
 * **Day 26:** Form Handling với TS + React Hook Form.
-* **Day 27:** Redux Toolkit với TypeScript.
+* **Day 27:** Redux Toolkit + Saga + RTK Query.
 * **Day 28:** Testing với Jest + TypeScript.
 * **Day 29:** Mini Project 2 — REST API + Frontend (React + Node + TS).
 * **Day 30:** Debugging dự án thực tế.
