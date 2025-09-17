@@ -1175,6 +1175,64 @@ Trong enterprise app, dữ liệu thường có **nhiều bản ghi (list)** →
 ---
 
 ## 1. Setup Slice với `createEntityAdapter`
+`createEntityAdapter` là một công cụ mạnh mẽ từ Redux Toolkit giúp bạn quản lý dữ liệu **được chuẩn hóa (normalized data)** trong Redux store một cách dễ dàng. Dữ liệu được chuẩn hóa nghĩa là thay vì lưu trữ một mảng các đối tượng, bạn sẽ lưu trữ các đối tượng trong một object với `id` làm key.
+
+-----
+
+### **1. Tại sao cần chuẩn hóa dữ liệu?**
+
+Thông thường, bạn nhận dữ liệu từ API dưới dạng một mảng các đối tượng: `[{ id: 1, ... }, { id: 2, ... }]`. Khi bạn muốn cập nhật, xóa, hoặc truy cập một đối tượng cụ thể, bạn phải duyệt qua toàn bộ mảng. Điều này rất kém hiệu quả khi số lượng đối tượng lớn.
+
+Dữ liệu được chuẩn hóa sẽ có dạng:
+
+```js
+{
+  ids: [1, 2, 3], // Mảng các ID để giữ thứ tự ban đầu
+  entities: {
+    1: { id: 1, ... },
+    2: { id: 2, ... },
+    3: { id: 3, ... }
+  }
+}
+```
+
+Với cấu trúc này, bạn có thể truy cập bất kỳ đối tượng nào chỉ bằng `O(1)` (hằng số) thay vì phải duyệt qua mảng `O(n)`.
+
+-----
+
+### **2. Giải thích chi tiết các thành phần**
+
+#### **`createEntityAdapter`**
+
+```ts
+const usersAdapter = createEntityAdapter<User>({
+  selectId: (user) => user.id, // default là `id`, có thể tuỳ chỉnh
+  sortComparer: (a, b) => a.name.localeCompare(b.name),
+});
+```
+
+  * **`createEntityAdapter<User>`**: Dòng này tạo ra một "adapter" chuyên biệt để quản lý dữ liệu kiểu `User`. Nó cung cấp một bộ các **hàm reducer** và **selectors** được tạo sẵn để xử lý dữ liệu đã được chuẩn hóa.
+  * **`selectId`**: Tùy chọn này cho phép bạn chỉ định trường nào của đối tượng sẽ được sử dụng làm `id`. Mặc định, nó sẽ tìm trường có tên `id`. Bạn chỉ cần định nghĩa lại khi tên trường là một cái tên khác (ví dụ: `_id`, `userId`).
+  * **`sortComparer`**: Tùy chọn này cho phép bạn sắp xếp mảng `ids` sau khi thêm hoặc cập nhật dữ liệu. Trong ví dụ, `usersAdapter` sẽ tự động sắp xếp danh sách người dùng theo tên (`a.name.localeCompare(b.name)`).
+
+#### **`initialState`**
+
+```ts
+const initialState = usersAdapter.getInitialState({
+  loading: false,
+  error: null as string | null,
+});
+```
+
+  * **`usersAdapter.getInitialState()`**: Đây là một phương thức được cung cấp bởi `createEntityAdapter` để tạo ra một **state ban đầu** đã được chuẩn hóa.
+  * Giá trị trả về sẽ có sẵn hai thuộc tính mặc định là `ids` và `entities`.
+  * Bạn có thể truyền thêm các thuộc tính tùy chỉnh vào bên trong hàm này (ví dụ: `loading`, `error`) để quản lý các trạng thái khác của slice.
+
+### **3. Lợi ích khi sử dụng `createEntityAdapter`**
+
+  * **Giảm code lặp lại (boilerplate):** Nó cung cấp sẵn các hàm reducer cho các thao tác phổ biến như thêm (`addOne`, `addMany`), cập nhật (`updateOne`, `updateMany`), xóa (`removeOne`, `removeMany`), v.v., giúp bạn không phải tự viết các logic này.
+  * **Hiệu suất cao:** Tối ưu hóa việc truy cập và cập nhật dữ liệu bằng `O(1)`.
+  * **Đơn giản hóa:** Quản lý state trở nên gọn gàng hơn, dễ đọc và dễ bảo trì hơn rất nhiều.
 
 ```ts
 // features/usersSlice.ts
@@ -1254,7 +1312,39 @@ export const usersSelectors = usersAdapter.getSelectors<RootState>(
 
 export default usersSlice.reducer;
 ```
+Dòng code này tạo ra một bộ **selectors** (hàm chọn lọc) giúp bạn truy cập dữ liệu đã được chuẩn hóa trong Redux store một cách hiệu quả. Đây là một trong những tính năng mạnh mẽ nhất của `createEntityAdapter`.
 
+---
+
+### **Giải thích chi tiết**
+
+#### **1. `usersAdapter.getSelectors<RootState>(...)`**
+
+* **`getSelectors`**: Đây là một phương thức của `usersAdapter`. Nó tạo ra một đối tượng chứa nhiều hàm selector tiện ích được tạo sẵn.
+* **`<RootState>`**: Dòng này chỉ định kiểu dữ liệu của toàn bộ Redux store (RootState) để TypeScript có thể kiểm tra kiểu an toàn.
+
+#### **2. `(state) => state.users`**
+
+* Đây là một **hàm "selector gốc"**. Nó có nhiệm vụ lấy ra đúng **slice** của state mà bạn muốn làm việc, trong trường hợp này là `state.users`.
+* `getSelectors` sử dụng hàm này để biết nơi cần tìm dữ liệu đã được chuẩn hóa (`ids` và `entities`) trong state.
+
+#### **3. Các selectors được tạo ra**
+
+Khi bạn gọi `getSelectors`, nó sẽ trả về một đối tượng chứa các hàm sau:
+
+* **`selectAll`**: Lấy tất cả các entity dưới dạng một **mảng**. Hàm này tự động biến đổi dữ liệu từ object `entities` thành một mảng, duy trì thứ tự ban đầu từ `ids`.
+* **`selectIds`**: Lấy ra mảng `ids` (ví dụ: `[1, 2, 3]`).
+* **`selectEntities`**: Lấy ra object `entities` (ví dụ: `{ 1: {...}, 2: {...} }`).
+* **`selectById`**: Lấy ra một entity cụ thể bằng `id`. (ví dụ: `selectById(state, 2)`).
+* **`selectTotal`**: Lấy tổng số lượng entity.
+
+#### **4. Tại sao chúng lại là `(memoized)`?**
+
+* **Memoization** là một kỹ thuật tối ưu hóa. Các selectors này sử dụng thư viện **Reselect** bên dưới để ghi nhớ kết quả. 
+* Điều này có nghĩa là, nếu slice `users` không thay đổi, khi bạn gọi `usersSelectors.selectAll(state)` lần thứ hai, nó sẽ **trả về cùng một mảng** mà không cần phải thực hiện lại quá trình biến đổi từ `entities` sang mảng.
+* Điều này rất quan trọng trong React, vì nó giúp ngăn chặn việc re-render không cần thiết của các component khi state không thay đổi.
+
+**Tóm lại**, `usersAdapter.getSelectors()` là một công cụ giúp bạn truy cập dữ liệu đã được chuẩn hóa một cách **an toàn, hiệu quả và tối ưu hiệu suất**, mà không cần phải tự viết các hàm selector phức tạp.
 ---
 
 ## 2. Store Setup
