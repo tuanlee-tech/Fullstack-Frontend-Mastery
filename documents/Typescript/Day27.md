@@ -101,10 +101,14 @@ const counterSlice = createSlice({
     incrementByAmount: (state, action: PayloadAction<number>) => {
       state.value += action.payload;
     },
+    // Action chỉ dùng để kích hoạt saga (tác vụ bất đồng bộ)
+    incrementAsync: (state) => {
+      // Logic này không làm gì cả, chỉ là một "signal" để saga lắng nghe
+    },
   },
 });
 
-export const { increment, decrement, incrementByAmount } = counterSlice.actions;
+export const { increment, decrement, incrementByAmount, incrementAsync } = counterSlice.actions;
 export default counterSlice.reducer;
 ```
 
@@ -216,20 +220,32 @@ npm install redux-saga
 
 ```ts
 // store.ts
-import createSagaMiddleware from "redux-saga";
 import { configureStore } from "@reduxjs/toolkit";
+import createSagaMiddleware from "redux-saga";
 import counterReducer from "./features/counterSlice";
 import rootSaga from "./sagas";
 
+// Tạo Saga Middleware
 const sagaMiddleware = createSagaMiddleware();
 
 export const store = configureStore({
-  reducer: { counter: counterReducer },
-  middleware: (getDefault) => getDefault().concat(sagaMiddleware),
+  reducer: {
+    counter: counterReducer,
+  },
+  // Thêm saga middleware vào store
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      thunk: false, // Tùy chọn: Tắt thunk middleware nếu không dùng
+    }).concat(sagaMiddleware),
+  /*
+  Hoặc dùng : middleware: (getDefault) => getDefault().concat(sagaMiddleware),
+  */
 });
 
+// Chạy root saga để bắt đầu lắng nghe các actions
 sagaMiddleware.run(rootSaga);
 
+// Định nghĩa types cho RootState và AppDispatch
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 ```
@@ -241,13 +257,23 @@ export type AppDispatch = typeof store.dispatch;
 import { takeEvery, put, delay } from "redux-saga/effects";
 import { incrementByAmount } from "../features/counterSlice";
 
-function* incrementAsync() {
-  yield delay(1000);
-  yield put(incrementByAmount(5));
+// Worker Saga: Xử lý logic khi action 'incrementAsync' được dispatch
+function* handleIncrementAsync() {
+  try {
+    // Giả lập một tác vụ bất đồng bộ, ví dụ: gọi API
+    yield delay(1000); // Chờ 1 giây
+
+    // Dispatch một action khác tới reducer để cập nhật state
+    yield put(incrementByAmount(5));
+  } catch (error) {
+    console.log("Error in increment async saga:", error);
+  }
 }
 
+// Watcher Saga: Lắng nghe các action cụ thể
 export default function* counterSaga() {
-  yield takeEvery("counter/incrementAsync", incrementAsync);
+  // Lắng nghe mọi action 'counter/incrementAsync'
+  yield takeEvery("counter/incrementAsync", handleIncrementAsync);
 }
 ```
 
@@ -258,8 +284,13 @@ export default function* counterSaga() {
 import { all } from "redux-saga/effects";
 import counterSaga from "./counterSaga";
 
+// Gom tất cả các saga lại để chạy đồng thời
 export default function* rootSaga() {
-  yield all([counterSaga()]);
+  yield all([
+    counterSaga(),
+    // Nếu có saga khác, bạn sẽ thêm vào đây:
+    // otherSaga(),
+  ]);
 }
 ```
 
@@ -268,7 +299,45 @@ export default function* rootSaga() {
 ```ts
 dispatch({ type: "counter/incrementAsync" });
 ```
+#### d. Dùng trong React Component
 
+* File `components/Counter.tsx`
+  ```ts
+  import React from 'react';
+  import { useSelector, useDispatch } from 'react-redux';
+  import { RootState } from '../store';
+  import { increment, incrementAsync } from '../features/counterSlice';
+
+  const Counter = () => {
+    // Lấy giá trị 'counter' từ Redux state
+    const count = useSelector((state: RootState) => state.counter.value);
+    const dispatch = useDispatch();
+
+    return (
+      <div>
+        <h2>Saga Counter Example</h2>
+        <p>Current value: {count}</p>
+        
+        {/* Nút dispatch action đồng bộ */}
+        <button onClick={() => dispatch(increment())}>
+          Tăng (+1)
+        </button>
+
+        {/* Nút dispatch action bất đồng bộ */}
+        <button onClick={() => dispatch(incrementAsync())}>
+          Tăng (+5) sau 1 giây
+        </button>
+        
+        <p>
+          Nhấn nút "Tăng (+5) sau 1 giây" để kích hoạt saga. Bạn sẽ thấy giá trị 
+          của counter tăng lên 5 sau một khoảng trễ.
+        </p>
+      </div>
+    );
+  };
+
+  export default Counter;
+  ```
 ---
 
 ### 3. RTK Query
