@@ -36,9 +36,171 @@
 
 ## 📚 Nội dung chi tiết
 
-### 1. Store + Slice (như cũ)
+### 1. Store + Slice
 
-Đã có ví dụ `counterSlice`, `todosSlice` với `createAsyncThunk` (Day 27 bản cũ).
+**Vì sao Redux Toolkit?**
+
+**Redux truyền thống** thường bị:
+
+* Quá nhiều boilerplate (actions, constants, reducers).
+* Dễ sai type khi viết action/reducer thủ công.
+* Async flow phức tạp (Redux Thunk, Saga).
+
+👉 **RTK** giải quyết bằng:
+
+* `configureStore()` thay cho `createStore`.
+* `createSlice()` auto-generate action + reducer.
+* `createAsyncThunk()` quản lý async logic.
+* Tích hợp tốt với TypeScript.
+
+---
+
+**Cấu hình Store với TypeScript**
+
+```ts
+// ./store.ts
+import { configureStore } from "@reduxjs/toolkit";
+import counterReducer from "./features/counterSlice";
+
+export const store = configureStore({
+  reducer: {
+    counter: counterReducer,
+  },
+});
+
+// Type helpers
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+```
+
+👉 Giữ type `RootState` và `AppDispatch` để dùng trong toàn bộ project.
+
+---
+**Tạo Slice với TypeScript**
+
+```ts
+// ./features/counterSlice.ts
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+interface CounterState {
+  value: number;
+}
+
+const initialState: CounterState = { value: 0 };
+
+const counterSlice = createSlice({
+  name: "counter",
+  initialState,
+  reducers: {
+    increment: (state) => {
+      state.value += 1;
+    },
+    decrement: (state) => {
+      state.value -= 1;
+    },
+    incrementByAmount: (state, action: PayloadAction<number>) => {
+      state.value += action.payload;
+    },
+  },
+});
+
+export const { increment, decrement, incrementByAmount } = counterSlice.actions;
+export default counterSlice.reducer;
+```
+
+---
+
+**Async Actions với `createAsyncThunk`**
+
+```ts
+// ./features/todosSlice.ts
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { RootState } from "../store";
+
+interface Todo {
+  id: number;
+  title: string;
+  completed: boolean;
+}
+
+interface TodosState {
+  items: Todo[];
+  loading: boolean;
+}
+
+const initialState: TodosState = {
+  items: [],
+  loading: false,
+};
+
+export const fetchTodos = createAsyncThunk<Todo[]>(
+  "todos/fetchTodos",
+  async () => {
+    const res = await fetch("https://jsonplaceholder.typicode.com/todos?_limit=5");
+    return (await res.json()) as Todo[];
+  }
+);
+
+const todosSlice = createSlice({
+  name: "todos",
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchTodos.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchTodos.fulfilled, (state, action) => {
+        state.items = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchTodos.rejected, (state) => {
+        state.loading = false;
+      });
+  },
+});
+
+export const selectTodos = (state: RootState) => state.todos.items;
+export default todosSlice.reducer;
+```
+
+---
+
+**Dùng trong React Component**
+
+```tsx
+// ./App.tsx
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "./store";
+import { increment } from "./features/counterSlice";
+import { fetchTodos, selectTodos } from "./features/todosSlice";
+
+export default function App() {
+  const count = useSelector((state: RootState) => state.counter.value);
+  const todos = useSelector(selectTodos);
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    dispatch(fetchTodos());
+  }, [dispatch]);
+
+  return (
+    <div>
+      <h1>Count: {count}</h1>
+      <button onClick={() => dispatch(increment())}>+1</button>
+
+      <h2>Todos</h2>
+      <ul>
+        {todos.map((t) => (
+          <li key={t.id}>{t.title}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
 
 ---
 
