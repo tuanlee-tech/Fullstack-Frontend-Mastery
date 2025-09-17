@@ -348,50 +348,206 @@ dispatch({ type: "counter/incrementAsync" });
 // services/todosApi.ts
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+// Định nghĩa kiểu dữ liệu (interface) cho đối tượng Todo trả về từ API
 export interface Todo {
   id: number;
   title: string;
   completed: boolean;
 }
 
+// Khởi tạo một service API bằng createApi
 export const todosApi = createApi({
   reducerPath: "todosApi",
   baseQuery: fetchBaseQuery({ baseUrl: "https://jsonplaceholder.typicode.com/" }),
+
+  // 'tagTypes' giúp RTK Query quản lý việc cache và tự động cập nhật dữ liệu.
+  // Mỗi loại dữ liệu (ví dụ: 'Todo') sẽ có một tag riêng.
+  tagTypes: ["Todo"],
+
   endpoints: (builder) => ({
+    // 1. READ: Lấy danh sách todos
+    // endpoint này sử dụng `query` để lấy dữ liệu.
     getTodos: builder.query<Todo[], void>({
       query: () => "todos?_limit=5",
+      // 'providesTags' cho biết endpoint này cung cấp dữ liệu
+      // liên quan đến tag 'Todo'. Điều này giúp các mutation biết
+      // cần phải làm mới (re-fetch) dữ liệu nào sau khi thay đổi.
+      providesTags: ["Todo"],
+    }),
+
+    // 2. CREATE: Thêm một todo mới
+    // endpoint này sử dụng `mutation` để gửi yêu cầu POST.
+    addTodo: builder.mutation<Todo, Partial<Todo>>({
+      // `Partial<Todo>` cho phép gửi một phần của đối tượng Todo.
+      query: (newTodo) => ({
+        url: "todos", // Endpoint để thêm mới
+        method: "POST", // Phương thức HTTP
+        body: newTodo, // Dữ liệu gửi đi
+      }),
+      // 'invalidatesTags' báo hiệu rằng sau khi mutation này thành công,
+      // tất cả các endpoint có tag 'Todo' đều không hợp lệ
+      // và cần được re-fetch để lấy dữ liệu mới nhất.
+      invalidatesTags: ["Todo"],
+    }),
+
+    // 3. UPDATE: Cập nhật một todo
+    // endpoint này sử dụng `mutation` để gửi yêu cầu PUT.
+    updateTodo: builder.mutation<Todo, Todo>({
+      // `Todo` là kiểu dữ liệu: cần cả ID để xác định bản ghi cần cập nhật.
+      query: (updatedTodo) => ({
+        url: `todos/${updatedTodo.id}`, // Endpoint có ID
+        method: "PUT",
+        body: updatedTodo,
+      }),
+      invalidatesTags: ["Todo"],
+    }),
+
+    // 4. DELETE: Xóa một todo
+    // endpoint này sử dụng `mutation` để gửi yêu cầu DELETE.
+    deleteTodo: builder.mutation<void, number>({
+      // `number` là kiểu dữ liệu: cần ID của todo để xóa.
+      query: (id) => ({
+        url: `todos/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Todo"],
     }),
   }),
 });
 
-export const { useGetTodosQuery } = todosApi;
+// RTK Query tự động tạo hooks cho cả query và mutation.
+// query: `use` + `Tên endpoint` + `Query`
+// mutation: `use` + `Tên endpoint` + `Mutation`
+export const { useGetTodosQuery, useAddTodoMutation, useUpdateTodoMutation, useDeleteTodoMutation } = todosApi;
 ```
 
 👉 Add vào store:
 
 ```ts
+import { configureStore } from "@reduxjs/toolkit";
 import { todosApi } from "./services/todosApi";
 
 export const store = configureStore({
   reducer: {
+    // Thêm reducer của RTK Query vào store.
+    // 'reducerPath' mà bạn đã định nghĩa ở trên sẽ trở thành key của slice này.
     [todosApi.reducerPath]: todosApi.reducer,
   },
-  middleware: (getDefault) => getDefault().concat(todosApi.middleware),
+  middleware: (getDefault) =>
+    // Thêm middleware của RTK Query. Điều này là bắt buộc
+    // để nó có thể xử lý việc caching, re-fetching, và các tác vụ khác.
+    getDefault().concat(todosApi.middleware),
 });
 ```
 
 👉 Dùng trong Component:
 
 ```tsx
-const { data: todos, isLoading } = useGetTodosQuery();
+// Lấy hook được tạo tự động từ RTK Query.
+import React from 'react';
+import { useGetTodosQuery, useAddTodoMutation, useUpdateTodoMutation, useDeleteTodoMutation, Todo } from '../services/todosApi';
 
-return (
-  <ul>
-    {isLoading ? <p>Loading...</p> : todos?.map((t) => <li key={t.id}>{t.title}</li>)}
-  </ul>
-);
+const TodosComponent = () => {
+  // Lấy dữ liệu và trạng thái loading từ query hook
+  const { data: todos, isLoading } = useGetTodosQuery();
+  
+  // Lấy các hàm mutation và trạng thái của chúng
+  const [addTodo] = useAddTodoMutation();
+  const [updateTodo] = useUpdateTodoMutation();
+  const [deleteTodo] = useDeleteTodoMutation();
+
+  const handleAddTodo = () => {
+    // Gọi hàm addTodo với dữ liệu của todo mới.
+    addTodo({ id: 101, title: 'Learn RTK Query', completed: false });
+  };
+
+  const handleUpdateTodo = (todo: Todo) => {
+    // Gọi hàm updateTodo với dữ liệu đã cập nhật.
+    updateTodo({ ...todo, completed: !todo.completed });
+  };
+
+  const handleDeleteTodo = (id: number) => {
+    // Gọi hàm deleteTodo với id của todo cần xóa.
+    deleteTodo(id);
+  };
+
+  if (isLoading) {
+    return <p>Đang tải...</p>;
+  }
+
+  return (
+    <div>
+      <h2>Danh sách Todos (RTK Query)</h2>
+      <button onClick={handleAddTodo}>Thêm Todo Mới</button>
+      <ul>
+        {todos?.map((todo) => (
+          <li key={todo.id}>
+            <input
+              type="checkbox"
+              checked={todo.completed}
+              onChange={() => handleUpdateTodo(todo)}
+            />
+            <span style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
+              {todo.title}
+            </span>
+            <button onClick={() => handleDeleteTodo(todo.id)}>Xóa</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default TodosComponent;
 ```
 
+
+### **1. Tại sao `useGetTodosQuery` trả về một đối tượng?**
+
+```js
+const { data: todos, isLoading } = useGetTodosQuery();
+```
+
+`useGetTodosQuery` là một **query hook** (để đọc dữ liệu). Nhiệm vụ chính của nó là **fetch và quản lý trạng thái của dữ liệu**, vì vậy nó trả về một đối tượng chứa nhiều thông tin hữu ích về trạng thái của yêu cầu:
+
+  * **`data`**: Chứa dữ liệu đã lấy được từ API khi yêu cầu thành công.
+  * **`isLoading`**: Một giá trị boolean (`true`/`false`) cho biết yêu cầu đang được gửi và chờ phản hồi.
+  * **`isFetching`**: Tương tự như `isLoading`, nhưng có thể vẫn là `true` ngay cả khi dữ liệu đã có sẵn trong cache (ví dụ khi bạn re-fetch).
+  * **`error`**: Chứa đối tượng lỗi nếu yêu cầu thất bại.
+  * **`isSuccess`**, **`isError`**: Các trạng thái boolean khác nhau để kiểm tra kết quả của yêu cầu.
+  * **`refetch`**: Một hàm để kích hoạt lại việc fetch dữ liệu một cách thủ công.
+
+Việc trả về một đối tượng giúp bạn dễ dàng truy cập tất cả các thông tin này bằng cách sử dụng **destructuring** (giải cấu trúc), làm cho code gọn gàng hơn.
+
+-----
+
+### **2. Tại sao `useAddTodoMutation` và các mutation khác trả về một mảng?**
+
+```js
+const [addTodo, { isLoading }] = useAddTodoMutation();
+```
+
+Các **mutation hooks** (để thay đổi dữ liệu như POST, PUT, DELETE) trả về một mảng vì hai lý do chính:
+
+1.  **Phân biệt rõ chức năng:** Mảng trả về chứa hai phần tử:
+
+      * Phần tử đầu tiên là **hàm trigger** (`addTodo`, `updateTodo`, `deleteTodo`). Đây là hàm bạn gọi để thực thi yêu cầu mutation. Nó có thể được đổi tên tùy ý.
+      * Phần tử thứ hai là một **đối tượng trạng thái** (giống với query hook), chứa các thông tin như `isLoading`, `isSuccess`, `error`, v.v.
+
+2.  **Đảm bảo tính nhất quán và dễ sử dụng:** Với cách trả về này, bạn có thể dễ dàng tách biệt hàm gọi API khỏi trạng thái của nó. Điều này đặc biệt hữu ích khi bạn muốn gọi một mutation, ví dụ: trong một hàm `onClick`, và đồng thời truy cập vào trạng thái của nó để hiển thị UI tương ứng (ví dụ: hiển thị spinner khi đang tải).
+
+### **3. Ý nghĩa của `isLoading`**
+
+`isLoading` là một **trạng thái quan trọng** mà cả query và mutation hooks đều cung cấp. Nó cho biết liệu yêu cầu mạng (network request) đang diễn ra hay không.
+
+  * Khi `isLoading` là **`true`**:
+      * Nghĩa là yêu cầu đã được gửi và ứng dụng đang chờ phản hồi từ server.
+      * Bạn nên sử dụng trạng thái này để hiển thị các UI phản hồi lại người dùng, chẳng hạn như một spinner hoặc dòng chữ "Đang tải...".
+  * Khi `isLoading` là **`false`**:
+      * Yêu cầu đã hoàn thành, có thể thành công hoặc thất bại.
+      * Bạn có thể hiển thị dữ liệu hoặc thông báo lỗi cho người dùng.
+
+Việc sử dụng `isLoading` giúp tạo ra trải nghiệm người dùng tốt hơn, vì họ sẽ biết rằng ứng dụng đang hoạt động thay vì bị treo. Nó cũng ngăn chặn việc hiển thị dữ liệu lỗi thời hoặc không đầy đủ trong khi chờ phản hồi từ API.
 ---
 
 
