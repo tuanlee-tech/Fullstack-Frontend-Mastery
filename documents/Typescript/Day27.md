@@ -3346,103 +3346,473 @@ Tôi sẽ khuyên dùng **RTK Query** vì đơn giản, ít boilerplate. Saga th
 
 ## ⚡ Ví dụ Integration
 
-### 1. Auth Flow với Saga + RTKQ
+Dưới đây là toàn bộ code được viết lại và sắp xếp theo kiến trúc **Redux Toolkit + Redux-Saga + RTK Query** dành cho các ứng dụng phức tạp, kèm theo giải thích chi tiết cho từng phần.
 
-* Saga xử lý **login** (call API, lưu token, refresh token loop).
-* RTK Query sử dụng `baseQuery` inject token → fetch data.
+### Cấu trúc dự án
+
+```
+src/
+├── features/
+│   ├── authSlice.ts
+│   └── usersSlice.ts
+├── sagas/
+│   ├── authSaga.ts
+│   └── index.ts
+├── services/
+│   ├── api.ts
+│   └── rtkQueryBase.ts
+└── store.ts
+```
+
+-----
+
+### **1. Core Logic (Slices & Sagas)**
+
+#### **`features/authSlice.ts`**
+
+Quản lý trạng thái xác thực của người dùng (token, trạng thái loading).
 
 ```ts
-// authSaga.ts
-import { takeLatest, call, put, delay } from "redux-saga/effects";
-import { loginSuccess, loginFailure } from "../features/authSlice";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+interface AuthState {
+  token: string | null;
+  loading: boolean;
+}
+
+const initialState: AuthState = { token: null, loading: false };
+
+const authSlice = createSlice({
+  name: "auth",
+  initialState,
+  reducers: {
+    loginRequest: (state) => {
+      state.loading = true; // Kích hoạt trạng thái loading
+    },
+    loginSuccess: (state, action: PayloadAction<string>) => {
+      state.token = action.payload; // Lưu token
+      state.loading = false; // Tắt loading
+    },
+    loginFailure: (state) => {
+      state.loading = false; // Tắt loading và không lưu token
+    },
+  },
+});
+
+export const { loginRequest, loginSuccess, loginFailure } = authSlice.actions;
+export default authSlice.reducer;
+```
+
+-----
+
+#### **`sagas/authSaga.ts`**
+
+Saga xử lý luồng đăng nhập bất đồng bộ và các side effect.
+
+```ts
+import { takeLatest, call, put } from "redux-saga/effects";
+import { loginSuccess, loginFailure, loginRequest } from "../features/authSlice";
 import { apiLogin } from "../services/api";
 
-function* loginWorker(action: { type: string; payload: { username: string; password: string } }) {
+function* loginWorker(action: ReturnType<typeof loginRequest>) {
   try {
+    // Gọi API login bằng hàm 'call' của Saga
     const token: string = yield call(apiLogin, action.payload);
+    // Khi thành công, dispatch action loginSuccess
     yield put(loginSuccess(token));
-    // Optionally: start refresh token loop
   } catch (err) {
+    // Khi thất bại, dispatch action loginFailure
     yield put(loginFailure());
   }
 }
 
-export function* authSaga() {
-  yield takeLatest("auth/loginRequest", loginWorker);
+// Watcher Saga: Lắng nghe action loginRequest
+export default function* authSaga() {
+  // 'takeLatest' đảm bảo chỉ có 1 worker chạy tại một thời điểm
+  yield takeLatest(loginRequest.type, loginWorker);
 }
 ```
 
+-----
+
+#### **`sagas/index.ts`**
+
+Tập hợp tất cả các Saga lại thành một root Saga duy nhất.
+
 ```ts
-// rtkQueryBase.ts
+import { all } from "redux-saga/effects";
+import authSaga from "./authSaga";
+
+export default function* rootSaga() {
+  // 'all' cho phép chạy đồng thời nhiều Saga
+  yield all([authSaga()]);
+}
+```
+
+-----
+
+### **2. Services (API & RTK Query)**
+
+#### **`services/api.ts`**
+
+Mô phỏng hàm gọi API bên ngoài (có thể dùng `axios` hoặc `fetch`).
+
+```ts
+// services/api.ts
+export const apiLogin = async (credentials: any): Promise<string> => {
+  console.log("Calling login API with credentials:", credentials);
+  // Giả lập độ trễ mạng
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  if (credentials.username === "test" && credentials.password === "password") {
+    return "fake-jwt-token-12345";
+  } else {
+    throw new Error("Invalid credentials");
+  }
+};
+```
+
+-----
+
+#### **`services/rtkQueryBase.ts`**
+
+Đây là `baseQuery` dùng chung, tự động thêm token vào header `Authorization` cho mọi yêu cầu API.
+
+```ts
 import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../store";
 
+// baseQueryWithAuth sẽ tự động thêm token xác thực
 export const baseQueryWithAuth = fetchBaseQuery({
-  baseUrl: "https://api.example.com",
+  baseUrl: "https://api.example.com/",
   prepareHeaders: (headers, { getState }) => {
+    // Lấy token từ Redux state
     const token = (getState() as RootState).auth.token;
-    if (token) headers.set("Authorization", `Bearer ${token}`);
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
     return headers;
   },
 });
 ```
 
----
+-----
 
-### 2. Real-time Data (WebSocket) với Saga + RTKQ
+#### **`features/usersSlice.ts`**
 
-* Saga listen socket → dispatch action update store.
-* RTKQ fetch initial list, nhưng update theo real-time bằng Saga.
+Sử dụng RTK Query để quản lý dữ liệu người dùng từ server.
 
 ```ts
-// socketSaga.ts
-import { eventChannel } from "redux-saga";
-import { put, take, call } from "redux-saga/effects";
-import { messageReceived } from "../features/chatSlice";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseQueryWithAuth } from "../services/rtkQueryBase";
 
-function createSocketChannel(socket: WebSocket) {
-  return eventChannel((emit) => {
-    socket.onmessage = (e) => emit(messageReceived(JSON.parse(e.data)));
-    return () => socket.close();
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+export const usersApi = createApi({
+  reducerPath: "usersApi",
+  // Sử dụng baseQuery có tích hợp token xác thực
+  baseQuery: baseQueryWithAuth,
+  tagTypes: ["Users"],
+  endpoints: (builder) => ({
+    getUsers: builder.query<User[], void>({
+      query: () => "users",
+      providesTags: ["Users"],
+    }),
+  }),
+});
+
+export const { useGetUsersQuery } = usersApi;
+```
+
+-----
+
+### **3. Store và Component**
+
+#### **`store.ts`**
+
+Cấu hình Redux Store để tích hợp tất cả các thành phần.
+
+```ts
+import { configureStore } from "@reduxjs/toolkit";
+import createSagaMiddleware from "redux-saga";
+import authReducer from "./features/authSlice";
+import rootSaga from "./sagas";
+import { usersApi } from "./features/usersSlice";
+
+const sagaMiddleware = createSagaMiddleware();
+
+export const store = configureStore({
+  reducer: {
+    auth: authReducer,
+    [usersApi.reducerPath]: usersApi.reducer,
+  },
+  middleware: (getDefault) =>
+    getDefault().concat(sagaMiddleware, usersApi.middleware),
+});
+
+sagaMiddleware.run(rootSaga);
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+```
+
+-----
+
+#### **`components/AuthAndUsers.tsx`**
+
+Component mẫu để sử dụng cả Saga và RTK Query.
+
+```tsx
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../store";
+import { loginRequest } from "../features/authSlice";
+import { useGetUsersQuery } from "../features/usersSlice";
+
+const AuthAndUsers = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { token, loading } = useSelector((state: RootState) => state.auth);
+  const { data: users, isLoading: usersLoading } = useGetUsersQuery(undefined, {
+    skip: !token, // Bỏ qua query nếu chưa có token
+  });
+
+  const handleLogin = () => {
+    dispatch(loginRequest({ username: "test", password: "password" }));
+  };
+
+  return (
+    <div>
+      <h2>1. Login (Redux-Saga)</h2>
+      {!token ? (
+        <button onClick={handleLogin}>
+          {loading ? "Đang đăng nhập..." : "Đăng nhập"}
+        </button>
+      ) : (
+        <p>Đăng nhập thành công! Token: {token}</p>
+      )}
+
+      {token && (
+        <>
+          <h2>2. Danh sách người dùng (RTK Query)</h2>
+          {usersLoading ? (
+            <p>Đang tải danh sách người dùng...</p>
+          ) : (
+            <ul>
+              {users?.map((user) => (
+                <li key={user.id}>{user.name} ({user.email})</li>
+              ))}
+            </ul>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
+export default AuthAndUsers;
+
+```
+---
+
+Ví dụ về tích hợp **Real-time Data (WebSocket) với Saga và RTK Query**. Dưới đây là toàn bộ code và giải thích chi tiết cho kịch bản này.
+
+-----
+
+### **1. Core Logic (Slices & Sagas)**
+
+#### `features/chatSlice.ts`
+
+Slice này quản lý trạng thái của các tin nhắn trò chuyện, bao gồm danh sách tin nhắn và các action cần thiết.
+
+```ts
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+export interface Message {
+  id: string;
+  user: string;
+  text: string;
+}
+
+interface ChatState {
+  messages: Message[];
+}
+
+const initialState: ChatState = {
+  messages: [],
+};
+
+const chatSlice = createSlice({
+  name: "chat",
+  initialState,
+  reducers: {
+    // Action này được Saga dispatch khi nhận được tin nhắn mới từ WebSocket
+    messageReceived: (state, action: PayloadAction<Message>) => {
+      state.messages.push(action.payload);
+    },
+    // Action này chỉ dùng để kích hoạt Saga
+    connectWebSocket: (state) => {
+      // no-op (không làm gì), chỉ là tín hiệu cho Saga
+    },
+  },
+});
+
+export const { messageReceived, connectWebSocket } = chatSlice.actions;
+export default chatSlice.reducer;
+```
+
+-----
+
+#### `sagas/chatSaga.ts`
+
+Saga này chuyên trách việc kết nối và lắng nghe dữ liệu từ WebSocket.
+
+```ts
+import { eventChannel } from "redux-saga";
+import { put, take, call, fork } from "redux-saga/effects";
+import { messageReceived, connectWebSocket } from "../features/chatSlice";
+
+// Hàm helper để tạo một kênh sự kiện từ WebSocket
+function createWebSocketChannel(socket: WebSocket) {
+  // eventChannel là một hàm helper của Saga giúp tạo một kênh
+  // để chuyển đổi các sự kiện bên ngoài (như socket.onmessage) thành các action Redux
+  return eventChannel((emitter) => {
+    socket.onmessage = (event) => {
+      // Khi có tin nhắn từ socket, 'emit' một action với dữ liệu
+      try {
+        const message = JSON.parse(event.data);
+        emitter(messageReceived(message));
+      } catch (e) {
+        console.error("Failed to parse message:", e);
+      }
+    };
+
+    socket.onclose = () => {
+      emitter(messageReceived({ id: 'system', user: 'system', text: 'WebSocket disconnected.' }));
+      emitter(eventChannel.END); // Kết thúc kênh
+    };
+    
+    // Hàm này được gọi khi kênh bị đóng (ví dụ: khi component unmount)
+    return () => {
+      socket.close();
+    };
   });
 }
 
-export function* chatSaga() {
-  const socket = new WebSocket("wss://example.com/chat");
-  const channel = yield call(createSocketChannel, socket);
-
+// Worker Saga để lắng nghe và dispatch các action từ kênh
+function* watchMessages(channel: ReturnType<typeof createWebSocketChannel>) {
   while (true) {
-    const msg = yield take(channel);
-    yield put(msg);
+    // 'take' tạm dừng cho đến khi nhận được một action từ kênh
+    const action = yield take(channel);
+    // 'put' action đó vào store Redux
+    yield put(action);
   }
 }
+
+// Watcher Saga chính
+export default function* chatSaga() {
+  // Lắng nghe action 'connectWebSocket' để bắt đầu kết nối
+  yield take(connectWebSocket.type);
+  const socket = new WebSocket("wss://echo.websocket.org/"); // URL WebSocket
+  const channel = yield call(createWebSocketChannel, socket);
+
+  // 'fork' chạy 'watchMessages' trong một tiến trình riêng
+  yield fork(watchMessages, channel);
+}
 ```
 
-→ RTK Query `getMessages` fetch initial messages, còn Saga push thêm message mới từ socket.
+-----
 
----
+### **2. Component & Tích hợp**
 
-### 3. Enterprise Data Cache Strategy
+#### `store.ts`
 
-* RTK Query: dùng `tagTypes` → invalidate cache khi cần.
-* Saga: trigger invalidate bằng `dispatch(api.util.invalidateTags(...))`.
+Thêm `chatSlice` và `chatSaga` vào store.
 
 ```ts
-// postsSaga.ts
-import { put, takeEvery } from "redux-saga/effects";
-import { postsApi } from "../services/postsApi";
+import { configureStore } from "@reduxjs/toolkit";
+import createSagaMiddleware from "redux-saga";
+import rootSaga from "./sagas";
+import chatReducer from "./features/chatSlice";
+import { todosApi } from "./features/todosSlice"; // Giả sử RTK Query service
 
-function* onNewPostAdded() {
-  yield put(postsApi.util.invalidateTags(["Posts"]));
-}
+const sagaMiddleware = createSagaMiddleware();
 
-export function* postsSaga() {
-  yield takeEvery("post/addSuccess", onNewPostAdded);
+export const store = configureStore({
+  reducer: {
+    chat: chatReducer,
+    [todosApi.reducerPath]: todosApi.reducer,
+  },
+  middleware: (getDefault) =>
+    getDefault().concat(sagaMiddleware, todosApi.middleware),
+});
+
+sagaMiddleware.run(rootSaga);
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+```
+
+#### `sagas/index.ts`
+
+Thêm `chatSaga` vào root Saga.
+
+```ts
+import { all } from "redux-saga/effects";
+import chatSaga from "./chatSaga";
+
+export default function* rootSaga() {
+  yield all([
+    chatSaga(),
+    // Các sagas khác
+  ]);
 }
 ```
 
-👉 Như vậy: Saga xử lý flow add post (e.g. track analytics, log), nhưng RTKQ đảm nhận cache update.
+#### `components/Chat.tsx`
 
+Component để hiển thị tin nhắn và dispatch action kết nối.
+
+```tsx
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../store';
+import { connectWebSocket } from '../features/chatSlice';
+
+const ChatComponent = () => {
+  const dispatch = useDispatch();
+  const messages = useSelector((state: RootState) => state.chat.messages);
+
+  useEffect(() => {
+    // Kích hoạt Saga để kết nối WebSocket khi component mount
+    dispatch(connectWebSocket());
+  }, [dispatch]);
+
+  return (
+    <div>
+      <h3>Real-time Chat (Saga + WebSocket)</h3>
+      <div style={{ border: '1px solid #ccc', height: '200px', overflowY: 'scroll', padding: '10px' }}>
+        {messages.map((msg, index) => (
+          <p key={index}><strong>{msg.user}:</strong> {msg.text}</p>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default ChatComponent;
+```
+
+-----
+
+### **3. Tại sao đây là sự kết hợp tối ưu?**
+
+  * **Tách biệt trách nhiệm:** `chatSlice` chỉ quản lý dữ liệu (state) của các tin nhắn. `chatSaga` chuyên trách toàn bộ logic bất đồng bộ và phức tạp của WebSocket. Điều này giúp mỗi phần của code tập trung vào một nhiệm vụ duy nhất.
+  * **Quản lý luồng phức tạp:** Saga rất phù hợp cho các luồng dữ liệu liên tục như WebSocket. Nó có thể dễ dàng xử lý các sự kiện `onmessage`, `onclose`, `onerror` và tự động dispatch action tới Redux store.
+  * **Tích hợp dễ dàng:** Khi có dữ liệu mới từ WebSocket, Saga chỉ cần `put` một action (ví dụ: `messageReceived`). Reducer của `chatSlice` sẽ nhận action này và cập nhật state một cách đồng bộ. Giao diện người dùng sẽ tự động re-render khi state thay đổi.
+  * **RTK Query vẫn có thể hoạt động:** Trong kịch bản thực tế, bạn có thể dùng một `query` của RTK Query để lấy **lịch sử tin nhắn ban đầu**, trong khi Saga đảm nhận việc **cập nhật tin nhắn mới theo thời gian thực**. Cả hai sẽ cùng tồn tại và hoạt động hiệu quả.
 ---
 
 ## 📊 Trade-offs trong Enterprise
