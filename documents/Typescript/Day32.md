@@ -13,13 +13,55 @@ Sau ngày học này, bạn sẽ:
 ---
 
 ## 2️⃣ TL;DR
+### **Bảng tóm tắt các Utility Types thường dùng trong TypeScript** 🤓
 
-| Utility Type    | Chức năng                                | Ví dụ nhanh              |           |         |              |       |
-| --------------- | ---------------------------------------- | ------------------------ | --------- | ------- | ------------ | ----- |
-| `Pick<T, K>`    | Chọn một tập con keys từ T               | \`Pick\<User, 'id'       | 'name'>\` |         |              |       |
-| `Omit<T, K>`    | Loại bỏ một tập keys khỏi T              | `Omit<User, 'password'>` |           |         |              |       |
-| `Extract<T, U>` | Lấy union type có thể assign được sang U | \`Extract<'a'            | 'b'       | 'c','a' | 'c'> → 'a'   | 'c'\` |
-| `Exclude<T, U>` | Loại bỏ union type có thể assign sang U  | \`Exclude<'a'            | 'b'       | 'c','a' | 'c'> → 'b'\` |       |
+---
+
+### **1. `Pick<T, K>`**
+
+`Pick<T, K>` giúp bạn **chọn các thuộc tính cụ thể** từ một kiểu dữ liệu đã có.
+
+* `T`: Kiểu dữ liệu gốc mà bạn muốn chọn.
+* `K`: Các khóa (keys) mà bạn muốn giữ lại.
+
+**Ví dụ**:
+`Pick<User, 'id' | 'name'>` sẽ tạo ra một kiểu mới chỉ bao gồm các thuộc tính `id` và `name` của interface `User`.
+
+---
+
+### **2. `Omit<T, K>`**
+
+`Omit<T, K>` giúp bạn **loại bỏ các thuộc tính cụ thể** khỏi một kiểu dữ liệu.
+
+* `T`: Kiểu dữ liệu gốc.
+* `K`: Các khóa mà bạn muốn bỏ đi.
+
+**Ví dụ**:
+`Omit<User, 'password'>` sẽ tạo ra một kiểu mới bao gồm tất cả các thuộc tính của `User` trừ thuộc tính `password`.
+
+---
+
+### **3. `Extract<T, U>`**
+
+`Extract<T, U>` giúp bạn **trích xuất các thành viên** từ một Union Type (`T`) mà có thể gán được cho một Union Type khác (`U`).
+
+* `T`: Union Type gốc.
+* `U`: Union Type mà bạn muốn so sánh.
+
+**Ví dụ**:
+`Extract<'a' | 'b' | 'c', 'a' | 'c'>` sẽ trả về `'a' | 'c'`.
+
+---
+
+### **4. `Exclude<T, U>`**
+
+`Exclude<T, U>` giúp bạn **loại bỏ các thành viên** từ một Union Type (`T`) mà có thể gán được cho một Union Type khác (`U`). Nó hoạt động ngược lại với `Extract`.
+
+* `T`: Union Type gốc.
+* `U`: Union Type dùng để so sánh.
+
+**Ví dụ**:
+`Exclude<'a' | 'b' | 'c', 'a' | 'c'>` sẽ trả về `'b'`.
 
 ✅ Ứng dụng enterprise: subset data, remove sensitive fields, API response shaping, form validation.
 
@@ -261,6 +303,66 @@ type SanitizedResponse = DeepOmit<ApiResponse, 'password'>;
 
 * Xử lý **API response**, loại bỏ sensitive field nested mà vẫn type-safe.
 
+Dưới đây là phần giải thích chi tiết về `DeepOmit` và cách nó hoạt động.
+
+-----
+
+### `DeepOmit` - Loại Bỏ Thuộc Tính Lồng Sâu
+
+`DeepOmit<T, K>` là một kiểu dữ liệu tiện ích (utility type) nâng cao trong TypeScript, được dùng để loại bỏ một thuộc tính bất kỳ (`K`) khỏi một đối tượng (`T`), kể cả khi thuộc tính đó nằm sâu bên trong các đối tượng lồng nhau.
+
+Đây là một ví dụ mạnh mẽ về việc sử dụng các tính năng cao cấp của TypeScript để giải quyết các vấn đề phức tạp trong thực tế, như xử lý dữ liệu nhạy cảm.
+
+### Phân tích Cú pháp
+
+```ts
+type DeepOmit<T, K extends PropertyKey> = {
+  // 1. Loại bỏ key không mong muốn ở cấp hiện tại.
+  [P in keyof T as P extends K ? never : P]: 
+    // 2. Kiểm tra và áp dụng đệ quy cho các thuộc tính con.
+    T[P] extends object ? DeepOmit<T[P], K> : T[P];
+};
+```
+
+1.  **`[P in keyof T as P extends K ? never : P]`**: Đây là một kiểu ánh xạ (`Mapped Type`) với tính năng **lọc và đổi tên khóa** (`Key Remapping`).
+
+      * `P in keyof T`: Duyệt qua tất cả các khóa (`P`) của kiểu dữ liệu gốc (`T`).
+      * `as P extends K ? never : P`: Đây là phần "kiểm soát".
+          * `P extends K`: Kiểm tra xem khóa hiện tại (`P`) có trùng với khóa bạn muốn loại bỏ (`K`) hay không.
+          * `? never`: Nếu trùng, gán kiểu `never` cho khóa. Trong Mapped Types, `never` sẽ loại bỏ thuộc tính đó khỏi kiểu dữ liệu cuối cùng.
+          * `: P`: Nếu không trùng, giữ lại khóa đó.
+
+2.  **`T[P] extends object ? DeepOmit<T[P], K> : T[P]`**: Đây là kiểu dữ liệu có điều kiện (`Conditional Type`), xử lý các đối tượng lồng nhau.
+
+      * `T[P] extends object`: Kiểm tra xem giá trị của thuộc tính hiện tại có phải là một đối tượng không.
+      * `? DeepOmit<T[P], K>`: Nếu đúng, nó gọi đệ quy chính nó (`DeepOmit`) cho đối tượng con đó (`T[P]`). Điều này đảm bảo rằng quá trình loại bỏ thuộc tính sẽ tiếp tục xuống các cấp sâu hơn.
+      * `: T[P]`: Nếu không phải là đối tượng (ví dụ: `string`, `number`), nó giữ nguyên kiểu dữ liệu ban đầu.
+
+### Ví dụ Ứng dụng Thực tế (Enterprise Use Case)
+
+Hãy xem xét `ApiResponse` chứa dữ liệu người dùng, bao gồm cả mật khẩu (`password`) là một thuộc tính nhạy cảm.
+
+```ts
+interface ApiResponse {
+  user: { id: string; name: string; password: string };
+  settings: { theme: string; language: string };
+}
+```
+
+Khi bạn sử dụng `DeepOmit<ApiResponse, 'password'>`, quá trình sẽ diễn ra như sau:
+
+  * **Cấp độ 1**: `DeepOmit` duyệt qua các khóa `'user'` và `'settings'`.
+      * `'user'` và `'settings'` không trùng với `'password'`, nên chúng được giữ lại.
+      * Giá trị của cả hai thuộc tính này đều là đối tượng, nên `DeepOmit` được gọi đệ quy.
+  * **Cấp độ 2**:
+      * `DeepOmit<typeof user, 'password'>`: Duyệt qua các khóa `'id'`, `'name'`, và `'password'`.
+          * `'id'` và `'name'` được giữ lại.
+          * `'password'` trùng với khóa bạn muốn loại bỏ, nên nó được biến thành `never` và bị loại bỏ.
+      * `DeepOmit<typeof settings, 'password'>`: Duyệt qua các khóa `'theme'` và `'language'`. Cả hai đều được giữ lại.
+
+**Kết quả cuối cùng** là kiểu `SanitizedResponse` sẽ không còn thuộc tính `password`, đảm bảo rằng mọi dữ liệu nhạy cảm đã được lọc bỏ một cách an toàn về mặt kiểu, ngay cả khi chúng nằm sâu trong cấu trúc.
+
+Điều này rất quan trọng trong các ứng dụng doanh nghiệp, nơi việc xử lý và truyền tải dữ liệu nhạy cảm đòi hỏi sự chính xác và an toàn tuyệt đối.
 ---
 
 ### b. Kết hợp Pick + Partial + Record cho incremental form update
@@ -494,3 +596,5 @@ console.log(newConfig.server.host); // 127.0.0.1
 
 ---
 
+
+📌 [<< Ngày 31](./Day31.md) | [Ngày 33 >>](./Day33.md)

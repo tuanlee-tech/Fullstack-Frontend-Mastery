@@ -481,12 +481,20 @@ const frozenState = deepFreeze(state);
 
 ---
 
-## 🔹 Level 3 — Conditional Mapped Types + Factory
+Dưới đây là nội dung đầy đủ đã được viết lại, bao gồm cả đề bài, lời giải và giải thích chi tiết.
 
-**Đề bài:**
+-----
 
-1. Lọc các field type `string` từ interface `User`.
-2. Tạo `factory` typed cho các field đó, trả về giá trị mặc định.
+## 🔹 Level 3: Conditional Mapped Types + Factory
+
+Bài toán này sử dụng các tính năng cao cấp của TypeScript để tạo một "nhà máy" (factory) khởi tạo dữ liệu mặc định một cách tự động và an toàn về kiểu dữ liệu.
+
+### Đề bài
+
+1.  **Lọc các field** có kiểu `string` từ interface `User`.
+2.  **Tạo một factory** an toàn về kiểu dữ liệu cho các field đã lọc, trả về giá trị mặc định.
+
+**Interface mẫu:**
 
 ```ts
 interface User {
@@ -497,19 +505,25 @@ interface User {
 }
 ```
 
-**Solution:**
+### Lời giải
 
 ```ts
-// Conditional Mapped Type
+// 1. Conditional Mapped Type
+// Kiểu này lọc ra những key của T mà giá trị của nó là string.
 type StringProps<T> = {
+  // Với mỗi key K trong T...
   [K in keyof T]: T[K] extends string ? K : never;
-}[keyof T]; // union of keys with string type
+  // ...kiểm tra nếu giá trị T[K] là string, giữ lại K; nếu không, gán 'never'.
+}[keyof T];
+// Lấy union của tất cả các giá trị (tên keys). 'never' sẽ bị loại bỏ.
 
-type UserStringKeys = StringProps<User>; // "name" | "email"
+type UserStringKeys = StringProps<User>; // Kết quả: "name" | "email"
 
-// Factory
+// 2. Factory Type
+// Kiểu này tạo ra một đối tượng với các phương thức khởi tạo cho các key K đã chọn.
 type Factory<T extends object, K extends keyof T> = {
   [P in K]: () => T[P];
+  // Với mỗi key P trong K, tạo một hàm trả về giá trị có kiểu T[P].
 };
 
 const userFactory: Factory<User, UserStringKeys> = {
@@ -517,6 +531,7 @@ const userFactory: Factory<User, UserStringKeys> = {
   email: () => 'alice@example.com',
 };
 
+// 3. Sử dụng Factory để tạo đối tượng
 const user: User = {
   id: 1,
   name: userFactory.name(),
@@ -525,15 +540,25 @@ const user: User = {
 };
 
 console.log(user);
+// Output: { id: 1, name: 'Alice', email: 'alice@example.com', age: 30 }
 ```
 
-**Giải thích:**
+-----
 
-* Conditional mapped type lọc ra **keys có type string**.
-* Factory pattern tạo object type-safe → **IDE autocomplete + enterprise-safe**.
+### Giải thích
 
+### Cách thức hoạt động
+
+  * `StringProps<T>` là một **kiểu ánh xạ có điều kiện** (`Conditional Mapped Type`). Nó duyệt qua tất cả các thuộc tính của `User` và kiểm tra kiểu của từng thuộc tính. Nếu kiểu đó là `string`, nó sẽ giữ lại tên thuộc tính (`'name'`, `'email'`). Ngược lại, nó sử dụng từ khóa `never` để loại bỏ thuộc tính đó. Cuối cùng, nó tập hợp tất cả các tên thuộc tính còn lại thành một **kiểu union**, cho ra kết quả `"name" | "email"`.
+
+  * `Factory<T, K>` là một **kiểu ánh xạ** khác, nhận vào một interface `T` và một tập hợp các key `K`. Với mỗi key trong `K` (`'name'`, `'email'`), nó sẽ tạo ra một thuộc tính mới có kiểu là một **hàm trả về giá trị tương ứng** (`() => string`). Điều này ép buộc bạn phải cung cấp các hàm khởi tạo cho những thuộc tính đã được lọc.
+
+### Lợi ích trong thực tế
+
+  * **Đảm bảo an toàn về kiểu dữ liệu**: TypeScript sẽ tự động kiểm tra và báo lỗi nếu bạn thiếu một phương thức hoặc phương thức đó trả về sai kiểu dữ liệu. Điều này loại bỏ các lỗi tiềm ẩn ngay từ giai đoạn phát triển.
+  * **Tự động hoàn thành (Autocomplete)**: IDE của bạn sẽ tự động gợi ý các phương thức `name` và `email` khi bạn định nghĩa `userFactory`, giúp tăng tốc độ viết code và giảm thiểu lỗi chính tả.
+  * **Dễ bảo trì và mở rộng**: Nếu sau này bạn thêm một thuộc tính `string` khác vào interface `User`, cả `StringProps` và `Factory` sẽ tự động cập nhật mà không cần bạn phải thay đổi code thủ công. Điều này làm cho giải pháp trở nên rất phù hợp với các dự án lớn.
 ---
-
 ## 🔹 Bonus: DeepPartial cho incremental update
 
 ```ts
@@ -560,6 +585,82 @@ const updatedCfg = updateConfig(cfg, { server: { port: 9090 } });
 console.log(updatedCfg.server.port); // 9090
 ```
 
+
+-----
+
+### Phân tích Solution: `DeepPartial` và Cập Nhật Cấu Hình
+
+Bài toán này sử dụng một kiểu dữ liệu tự định nghĩa (`DeepPartial`) để cho phép cập nhật một phần của một đối tượng phức tạp mà vẫn giữ được tính an toàn về kiểu của TypeScript.
+
+### Lời giải
+
+```ts
+// 1. Định nghĩa kiểu DeepPartial
+// Kiểu này biến tất cả các thuộc tính lồng sâu bên trong một đối tượng thành tùy chọn.
+type DeepPartial<T> = {
+  // Lặp qua từng khóa (key) trong T và thêm dấu '?' để biến nó thành tùy chọn.
+  [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
+  // Nếu giá trị của khóa đó là một đối tượng, áp dụng DeepPartial một cách đệ quy.
+  // Ngược lại, giữ nguyên kiểu ban đầu.
+};
+
+// 2. Định nghĩa interface cấu hình gốc
+interface Config {
+  server: { host: string; port: number };
+  db: { user: string; password: string };
+}
+
+// 3. Hàm cập nhật cấu hình
+// Hàm này nhận vào một cấu hình hiện tại và một đối tượng "vá" (patch) chỉ chứa một phần của cấu hình.
+function updateConfig<T>(current: T, patch: DeepPartial<T>): T {
+  // LƯU Ý: Phép toán này chỉ thực hiện "shallow merge". 
+  // Nó sẽ ghi đè toàn bộ đối tượng server, không phải chỉ thuộc tính port.
+  // Để thực hiện "deep merge", cần một hàm tùy chỉnh phức tạp hơn.
+  return { ...current, ...patch };
+}
+
+// 4. Ví dụ sử dụng
+// Cấu hình gốc
+const cfg: Config = {
+  server: { host: 'localhost', port: 8080 },
+  db: { user: 'root', password: '123' },
+};
+
+// Cập nhật chỉ một phần của cấu hình: port của server
+const updatedCfg = updateConfig(cfg, { server: { port: 9090 } });
+
+console.log(updatedCfg.server.port); // In ra 9090
+console.log(updatedCfg.server.host); // In ra undefined, vì 'host' đã bị ghi đè.
+```
+
+-----
+
+### Giải thích
+
+### 1\. `DeepPartial<T>`: Linh Hoạt và An Toàn
+
+`DeepPartial<T>` là một kiểu dữ liệu tự định nghĩa (không có sẵn trong TypeScript) được tạo ra để giải quyết một hạn chế của kiểu `Partial<T>` có sẵn.
+
+  * **`Partial<T>`**: Chỉ làm cho các thuộc tính ở cấp độ đầu tiên là tùy chọn. Ví dụ, `Partial<Config>` sẽ cho phép bạn có một đối tượng `{ server?: ... }` hoặc `{ db?: ... }`, nhưng thuộc tính bên trong `server` (`host` và `port`) vẫn là bắt buộc.
+  * **`DeepPartial<T>`**: Kiểu này đi sâu vào cấu trúc đối tượng, làm cho tất cả các thuộc tính lồng sâu đều tùy chọn. Nhờ vào cú pháp đệ quy (`T[K] extends object ? DeepPartial<T[K]> : T[K]`), nó đảm bảo bạn có thể tạo một đối tượng vá chỉ với một vài thuộc tính bất kỳ, bất kể chúng nằm ở cấp độ nào.
+
+### 2\. Hàm `updateConfig`: Giới Hạn của `...`
+
+Hàm `updateConfig` nhận một đối tượng vá có kiểu `DeepPartial<T>`, cho phép bạn truyền vào một đối tượng như `{ server: { port: 9090 } }` mà không bị lỗi kiểu.
+
+Tuy nhiên, như đã ghi chú trong code, phép toán `return { ...current, ...patch };` chỉ thực hiện **hợp nhất nông (shallow merge)**. Điều này có nghĩa là khi nó thấy thuộc tính `server` trong `patch`, nó sẽ ghi đè toàn bộ đối tượng `server` gốc bằng đối tượng mới.
+
+Trong ví dụ:
+
+  * `current.server` là `{ host: 'localhost', port: 8080 }`.
+  * `patch.server` là `{ port: 9090 }`.
+  * Phép hợp nhất `...current, ...patch` sẽ biến `{ ...current.server, ...patch.server }` thành `{ port: 9090 }`. Do đó, thuộc tính `host` ban đầu bị mất.
+
+Để thực hiện **hợp nhất sâu (deep merge)**, bạn sẽ cần một hàm tùy chỉnh hoặc sử dụng một thư viện như `lodash.merge` để xử lý việc hợp nhất các đối tượng lồng nhau một cách chính xác.
+
+### Kết luận
+
+`DeepPartial` là một công cụ mạnh mẽ giúp bạn tạo ra các đối tượng linh hoạt cho mục đích cập nhật, trong khi vẫn sử dụng hệ thống kiểu của TypeScript để đảm bảo tính an toàn. Nó rất hữu ích trong các tình huống cần cập nhật một phần dữ liệu, nhưng bạn cần hiểu rõ cách nó tương tác với các phép toán JavaScript như spread operator để tránh những lỗi không mong muốn.
 **Enterprise note:**
 
 * DeepPartial hữu ích cho **patch API requests** hoặc **nested state updates**.
