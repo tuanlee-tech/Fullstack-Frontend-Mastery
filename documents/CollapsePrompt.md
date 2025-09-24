@@ -1,0 +1,1 @@
+Viết lại nội dung của tôi ở dạng collapse Kết quả mong muốn : <details> <summary><strong>[Tiêu đề ]</strong></summary> [nội dung] </details> Không chào hỏi, đánh giá, phân tích gợi ý, chỉ đơn giản là cấu trúc tôi muốn, để copy mà ko phải edit gì
