@@ -1,3 +1,37 @@
+## 🎯 Tech Stack Tối Ưu (Những Gì Đã Biết)
+
+```yaml
+Frontend:
+  - Next.js 14 (App Router) ✅
+  - React 18 ✅
+  - TypeScript ✅
+  - TailwindCSS ✅
+  - shadcn/ui ✅
+
+State Management:
+  - Zustand (lightweight) ✅
+  - Redux Toolkit (enterprise) ✅
+  - TanStack Query (data fetching) ✅
+
+Forms:
+  - React Hook Form ✅
+  - Zod (validation) ✅
+
+Backend:
+  - Next.js API Routes ✅
+  - Node.js + Express ✅
+  - Prisma ORM ✅
+  - PostgreSQL ✅
+
+Deployment:
+  - Vercel (Next.js) ✅
+  - Railway/Supabase (Database) ✅
+```
+
+**Perfect! Đủ để build impressive portfolio.**
+
+---
+
 ## 📋 4 PROJECTS CHIẾN LƯỢC (8 Tuần)
 
 ### Chiến lược mới:
@@ -677,9 +711,174 @@ sagaMiddleware.run(rootSaga);
 
 ## 🥉 PROJECT 3: Smart Expense Splitter (2 tuần)
 **Platform**: Next.js 14  
-**Giữ nguyên như plan cũ**
+**Độ khó**: 6/10 ⭐⭐⭐  
+**Tại sao chọn thứ 3?**
+- Quick win (đơn giản hơn)
+- Algorithm showcase (debt optimization)
+- Practical use case (everyone needs this)
+- Polish & perfect (có thời gian làm đẹp)
 
-(Giữ nguyên content từ plan trước)
+### Tech Stack
+```yaml
+Frontend: Next.js 14 + TypeScript + Zustand
+State: Zustand + React Hook Form
+UI: shadcn/ui + TailwindCSS + Framer Motion
+Charts: Recharts
+Backend: Next.js API Routes
+Database: PostgreSQL + Prisma
+Auth: NextAuth.js
+Deploy: Vercel
+```
+
+### Core Features (MVP)
+
+**Week 1: Basic Split**
+- [ ] Authentication
+- [ ] Create group/trip
+- [ ] Add members
+- [ ] Add expense (who paid, amount, split method)
+- [ ] View balances (who owes whom)
+- [ ] Simple equal split
+
+**Week 2: Advanced Split + Algorithm**
+- [ ] Unequal split (percentages, custom amounts)
+- [ ] Item-based split (restaurant bill: who ordered what)
+- [ ] Debt simplification algorithm
+- [ ] Expense categories (food, transport, lodging)
+- [ ] Expense history & filters
+
+**Week 3: Polish & Extra**
+- [ ] Currency conversion (multi-currency support)
+- [ ] Settlement suggestions (optimal payment plan)
+- [ ] Receipt upload (image to OCR to expense)
+- [ ] Export report (PDF)
+- [ ] Beautiful animations (expense added, debt cleared)
+- [ ] Mobile responsive
+- [ ] Demo + Docs
+
+### Key Technical Highlights
+
+**1. Debt Simplification Algorithm**
+```typescript
+// lib/debtOptimizer.ts
+interface Balance {
+  userId: string;
+  amount: number; // Positive = owed, Negative = owes
+}
+
+export function optimizeDebts(balances: Balance[]) {
+  const creditors = balances.filter(b => b.amount > 0).sort((a, b) => b.amount - a.amount);
+  const debtors = balances.filter(b => b.amount < 0).sort((a, b) => a.amount - b.amount);
+  
+  const transactions: { from: string; to: string; amount: number }[] = [];
+  
+  let i = 0, j = 0;
+  
+  while (i < creditors.length && j < debtors.length) {
+    const credit = creditors[i].amount;
+    const debt = Math.abs(debtors[j].amount);
+    
+    const settled = Math.min(credit, debt);
+    
+    transactions.push({
+      from: debtors[j].userId,
+      to: creditors[i].userId,
+      amount: settled,
+    });
+    
+    creditors[i].amount -= settled;
+    debtors[j].amount += settled;
+    
+    if (creditors[i].amount === 0) i++;
+    if (debtors[j].amount === 0) j++;
+  }
+  
+  return transactions;
+}
+
+// Example:
+// A paid $100, B paid $50, C paid $0, Total = $150
+// Each should pay $50
+// Balances: A = +50, B = 0, C = -50
+// Result: C pays A $50 (1 transaction instead of 2)
+```
+
+**2. Item-based Split (Complex Form)**
+```typescript
+// components/ItemSplitForm.tsx
+import { useFieldArray } from 'react-hook-form';
+
+function ItemSplitForm() {
+  const { control, register } = useForm({
+    defaultValues: {
+      items: [{ name: '', price: 0, sharedBy: [] }]
+    }
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'items',
+  });
+
+  return (
+    <div>
+      {fields.map((field, index) => (
+        <div key={field.id}>
+          <input {...register(`items.${index}.name`)} placeholder="Item name" />
+          <input {...register(`items.${index}.price`)} type="number" />
+          <MultiSelect
+            options={members}
+            value={watch(`items.${index}.sharedBy`)}
+            onChange={(selected) => setValue(`items.${index}.sharedBy`, selected)}
+          />
+          <button onClick={() => remove(index)}>Remove</button>
+        </div>
+      ))}
+      <button onClick={() => append({ name: '', price: 0, sharedBy: [] })}>
+        Add Item
+      </button>
+    </div>
+  );
+}
+```
+
+**3. Currency Conversion**
+```typescript
+// lib/currency.ts
+const CACHE_KEY = 'exchange_rates';
+const CACHE_DURATION = 3600; // 1 hour
+
+export async function convertCurrency(
+  amount: number,
+  from: string,
+  to: string
+): Promise<number> {
+  if (from === to) return amount;
+
+  // Check cache
+  const cached = await redis.get(CACHE_KEY);
+  let rates = cached ? JSON.parse(cached) : null;
+
+  if (!rates) {
+    const response = await fetch(
+      `https://api.exchangerate-api.com/v4/latest/USD`
+    );
+    rates = await response.json();
+    await redis.setex(CACHE_KEY, CACHE_DURATION, JSON.stringify(rates));
+  }
+
+  const rate = rates.rates[to] / rates.rates[from];
+  return amount * rate;
+}
+```
+
+### Interview Talking Points
+- "Implemented graph-based debt optimization reducing transactions by 60%"
+- "Built complex nested forms with React Hook Form field arrays"
+- "Integrated currency conversion API with Redis caching"
+- "Used Zustand for simple, performant state management"
+- "Implemented receipt OCR using Google Vision API"
+
 
 ---
 
@@ -944,8 +1143,6 @@ async function OrdersTable() {
 
 ---
 
-## 🎯 Bây Giờ Thỏa Mãn Chưa?
-
 ✅ **React thuần**: 2 projects (Vite + React Router)
 ✅ **Next.js**: 2 projects (basics + advanced)
 ✅ **Redux Saga**: 1 project (master side effects)
@@ -959,3 +1156,307 @@ async function OrdersTable() {
 - Complex state management (Saga)
 - Modern tooling (Vite, Next.js 14)
 - Real-world patterns
+
+## 📊 Portfolio Summary
+
+### After 8 Weeks, Bạn Có:
+
+**3 Live Projects:**
+1. 🪙 **Crypto Tracker** - Real-time, WebSocket, Performance
+2. 🤖 **AI Task Manager** - Redux, AI, Real-time collaboration
+3. 💰 **Expense Splitter** - Algorithms, Complex forms
+
+**Tech Stack Demonstrated:**
+- ✅ Next.js 14 (App Router, Server Components)
+- ✅ TypeScript (advanced)
+- ✅ React 18 (Suspense, Transitions)
+- ✅ Zustand (lightweight state)
+- ✅ Redux Toolkit + RTK Query (enterprise)
+- ✅ TanStack Query (data fetching)
+- ✅ React Hook Form + Zod (forms)
+- ✅ shadcn/ui + TailwindCSS (modern UI)
+- ✅ Prisma + PostgreSQL (database)
+- ✅ WebSocket + SSE (real-time)
+- ✅ OpenAI API (AI integration)
+- ✅ Redis (caching)
+- ✅ NextAuth (authentication)
+
+**Skills Shown:**
+- ✅ Real-time systems
+- ✅ Performance optimization
+- ✅ Complex state management
+- ✅ AI integration
+- ✅ Algorithm implementation
+- ✅ API design
+- ✅ Database modeling
+- ✅ Deployment & DevOps
+
+---
+
+## 📝 Deliverables Per Project
+
+### For Each Project:
+
+**1. GitHub Repo**
+- Clean, organized code
+- Proper commit history (conventional commits)
+- Branches: `main`, `develop`, feature branches
+
+**2. README.md**
+```markdown
+# Project Name
+
+[Logo/Banner]
+
+## 🎯 Overview
+[1-2 sentences about the project]
+
+## ✨ Features
+- Feature 1
+- Feature 2
+- ...
+
+## 🛠️ Tech Stack
+- Frontend: Next.js 14, TypeScript, Redux Toolkit
+- Backend: Next.js API Routes, Prisma, PostgreSQL
+- ...
+
+## 🚀 Demo
+- **Live Demo**: https://...
+- **Video Demo**: https://... (Loom recording)
+- **Screenshots**: [Add 3-4 key screenshots]
+
+## 📊 Technical Highlights
+- Implemented X algorithm reducing Y by Z%
+- Built real-time feature using WebSocket
+- ...
+
+## 🏃‍♂️ Local Setup
+```bash
+# Steps to run locally
+```
+
+## 📖 Architecture
+[Diagram or explanation of architecture]
+
+## 🧪 Testing
+- Unit tests: XX% coverage
+- E2E tests: Key user flows
+
+## 📝 Lessons Learned
+- Challenge 1 and how I solved it
+- Challenge 2 and how I solved it
+```
+
+**3. Demo Video (Loom)**
+- 2-3 minutes per project
+- Show key features
+- Explain technical decisions
+- Upload to YouTube/Loom
+
+**4. Blog Post**
+- Write on dev.to or Medium
+- "Building a Real-time Crypto Tracker with Next.js and WebSocket"
+- Technical deep-dive on 1-2 interesting problems
+- 1000-1500 words with code examples
+
+**5. Live Demo**
+- Custom domain (optional but impressive)
+- Fast loading (Lighthouse 90+)
+- Mobile responsive
+- No bugs in happy path
+
+---
+
+## 🎯 Week-by-Week Plan
+
+### **Week 1-3: Crypto Tracker**
+- Days 1-2: Setup, Auth, Basic UI
+- Days 3-5: API integration, Portfolio logic
+- Days 6-10: Charts, WebSocket, Real-time
+- Days 11-14: Performance optimization, Redis caching
+- Days 15-16: Polish, Demo video, Blog post
+- Day 17-21: Deploy, Test, Documentation
+
+### **Week 4-6: AI Task Manager**
+- Days 1-2: Setup, Auth, Redux setup
+- Days 3-5: Task CRUD, Kanban board
+- Days 6-8: AI integration (OpenAI)
+- Days 9-11: Real-time updates (SSE)
+- Days 12-13: Polish, Advanced features
+- Days 14-17: Demo video, Blog post, Deploy
+
+### **Week 7-8: Expense Splitter**
+- Days 1-2: Setup, Auth, Group management
+- Days 3-4: Basic expense split
+- Days 5-6: Advanced split options
+- Days 7-8: Debt optimization algorithm
+- Days 9-10: Currency conversion, Categories
+- Days 11-12: Polish, Animations
+- Days 13-14: Demo video, Blog post, Deploy
+
+### **Week 8 (Final Week): Portfolio Polish**
+- Update personal website/portfolio
+- Add all 3 projects with links
+- Write summary blog post
+- Update LinkedIn
+- Prepare STAR stories for interviews
+- Practice demo presentations
+
+---
+
+## 🎤 Interview Preparation
+
+### STAR Stories (Chuẩn bị sẵn)
+
+**1. "Tell me about a challenging technical problem"**
+> **Situation**: Building the Crypto Tracker, needed to display live prices for 100+ coins without performance issues.
+> 
+> **Task**: Implement real-time updates via WebSocket while keeping UI responsive.
+> 
+> **Action**: 
+> - Researched WebSocket best practices
+> - Implemented connection pooling and automatic reconnection with exponential backoff
+> - Used TanStack Virtual to render only visible rows
+> - Added Redis caching for price data with 30-second TTL
+> 
+> **Result**: Reduced re-renders by 80%, achieved 60 FPS, and Lighthouse score of 92.
+
+**2. "How do you handle complex state management?"**
+> In my AI Task Manager, I used Redux Toolkit because the app had:
+> - Complex state (tasks, projects, users, real-time updates)
+> - Multiple data sources (API, WebSocket, optimistic updates)
+> - Need for time-travel debugging
+> 
+> I structured state with normalized data using Entity Adapter, which made updates efficient. For API calls, I used RTK Query which handled caching and invalidation automatically, reducing boilerplate by 60%.
+
+**3. "Describe a feature you're proud of"**
+> The debt optimization algorithm in Expense Splitter. Instead of naive approach (A→B $50, A→C $30), I implemented a graph-based algorithm that minimizes transactions.
+> 
+> For a group of 5 people with complex expenses, it reduced from 12 transactions to 4. I used a greedy algorithm: sort creditors and debtors, match highest credit with highest debt, repeat until balanced.
+> 
+> Added visualization showing before/after, which users loved.
+
+---
+
+## 💼 Job Application Strategy
+
+### Week 9+: Start Applying
+
+**Resume Updates:**
+```
+PROJECTS
+
+Crypto Investment Tracker | Next.js, TypeScript, Redux, WebSocket
+• Built real-time cryptocurrency portfolio tracker handling 10k+ concurrent users
+• Implemented WebSocket with automatic reconnection, reducing connection drops by 95%
+• Optimized rendering with virtualization, achieving 60 FPS with 1000+ items
+• Integrated Redis caching, reducing API calls by 85%
+🔗 Live Demo | 📹 Video | 💻 GitHub
+
+AI-Powered Task Manager | Next.js, Redux Toolkit, OpenAI API
+• Developed project management tool with AI-powered task breakdown
+• Implemented Redux Toolkit with RTK Query for normalized state management
+• Built real-time collaboration using Server-Sent Events
+• Integrated GPT-4 for intelligent task suggestions and descriptions
+🔗 Live Demo | 📹 Video | 💻 GitHub
+
+Smart Expense Splitter | Next.js, TypeScript, Algorithms
+• Created expense splitting app with debt optimization algorithm
+• Reduced transaction complexity from O(n²) to O(n log n) using graph theory
+• Built complex forms with React Hook Form supporting nested field arrays
+• Implemented multi-currency support with caching
+🔗 Live Demo | 📹 Video | 💻 GitHub
+```
+
+**LinkedIn Post Template:**
+```
+🚀 Excited to share my latest project: [Project Name]
+
+After 3 weeks of development, I built a [description] using:
+• Next.js 14 (App Router, Server Components)
+• TypeScript + Redux Toolkit
+• WebSocket for real-time updates
+• PostgreSQL + Prisma
+
+Key achievements:
+✅ Feature 1
+✅ Feature 2
+✅ Feature 3
+
+Technical highlights:
+💡 [Interesting technical challenge you solved]
+
+Check it out:
+🔗 Live demo: [link]
+💻 Source code: [link]
+📝 Blog post: [link]
+
+#webdevelopment #nextjs #react #typescript
+```
+
+---
+
+## 🎯 Success Metrics
+
+### After 2 Months:
+
+**Portfolio Checklist:**
+- ✅ 4 live, working projects
+- ✅ All projects mobile responsive
+- ✅ Lighthouse scores 90+
+- ✅ Comprehensive README for each
+- ✅ 4 demo videos
+- ✅ 4 technical blog posts
+- ✅ Updated LinkedIn with projects
+- ✅ Updated resume
+
+**Applications:**
+- Apply to 10-15 companies/week
+- Target: Senior Frontend, Full-stack roles
+- Salary expectation: 60-120M VND/month (VN), $100k-$150k (remote US)
+
+**Interview Prep:**
+- 10-15 STAR stories prepared
+- Can demo all 3 projects fluently
+- Can explain all technical decisions
+- Practice system design (1-2 per week)
+- LeetCode: 2-3 problems/week (Easy/Medium)
+
+---
+
+## 📚 Additional Resources
+
+### Study alongside building:
+
+**System Design (1-2 hours/week):**
+- YouTube: ByteByteGo, System Design Interview
+- Book: Designing Data-Intensive Applications (skim relevant chapters)
+
+**Algorithms (3-4 hours/week):**
+- LeetCode: 2-3 problems/week
+- Focus: Arrays, Hash Tables, Two Pointers, Sliding Window
+- Relate to your projects (e.g., debt optimization = graph problem)
+
+**Interview Prep (2 hours/week):**
+- Pramp.com (mock interviews)
+- Record yourself explaining projects
+- Practice explaining technical decisions
+
+---
+
+## ✅ Final Checklist
+
+**Before First Application:**
+- [ ] All 3 projects deployed and working
+- [ ] All demo videos recorded
+- [ ] All READMEs complete
+- [ ] At least 2 blog posts published
+- [ ] LinkedIn updated with projects
+- [ ] Resume updated
+- [ ] Personal portfolio website (optional but nice)
+- [ ] 5-10 STAR stories prepared
+- [ ] Can demo each project in 3 minutes
+- [ ] Practice coding challenges (30-50 LeetCode problems)
+
+---
